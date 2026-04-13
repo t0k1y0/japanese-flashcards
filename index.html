@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Japanese Flashcards</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;font-size:14px;padding:16px}
+.app{max-width:560px;margin:0 auto;padding:1rem 0}
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.toolbar select{font-size:13px;padding:6px 10px;border-radius:8px;border:0.5px solid #c0bdb4;background:#fff;color:#1a1a18;flex:1;min-width:140px}
+.toolbar button{font-size:13px;padding:6px 12px;white-space:nowrap;border-radius:8px;border:0.5px solid #c0bdb4;background:#fff;color:#1a1a18;cursor:pointer}
+.toolbar button:hover{background:#f0ede8}
+.progress-bar{height:4px;background:#dddad2;border-radius:2px;margin-bottom:14px;overflow:hidden}
+.progress-fill{height:100%;background:#185FA5;border-radius:2px;transition:width .3s}
+.card-area{cursor:pointer;user-select:none;margin-bottom:14px}
+.card{background:#fff;border:0.5px solid #c0bdb4;border-radius:12px;padding:28px 24px 20px;min-height:260px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;transition:border-color .15s}
+.card:hover{border-color:#888}
+.card.back{background:#f5f4f0}
+.side-tag{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:16px}
+.front-hira{font-size:56px;line-height:1.1;color:#1a1a18;margin-bottom:8px}
+.front-romaji{font-size:18px;color:#555;margin-bottom:10px;font-style:italic}
+.speak-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:20px;border:0.5px solid #c0bdb4;background:#fff;color:#555;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:4px}
+.speak-btn:hover{border-color:#888;background:#f5f4f0}
+.speak-btn.speaking{border-color:#185FA5;color:#185FA5;background:#e6f1fb}
+.speak-icon{width:16px;height:16px;flex-shrink:0}
+.back-kanji{font-size:48px;line-height:1.1;color:#1a1a18;margin-bottom:10px}
+.back-chinese{font-size:22px;color:#185FA5;margin-bottom:8px}
+.back-meaning{font-size:15px;color:#555;line-height:1.5}
+.counter{font-size:12px;color:#888;margin-top:16px}
+.nav{display:flex;gap:8px;margin-bottom:4px;align-items:center}
+.nav button{flex:1;padding:10px;font-size:13px;font-weight:500;border-radius:8px;border:0.5px solid #c0bdb4;background:#fff;color:#1a1a18;cursor:pointer}
+.nav button:hover{background:#f0ede8}
+.btn-play{border-color:#185FA5 !important;color:#0C447C !important}
+.btn-play:hover{background:#e6f1fb !important}
+.btn-play.active{background:#185FA5 !important;color:#fff !important;border-color:#185FA5 !important}
+.play-info{font-size:11px;color:#888;text-align:center;margin-bottom:10px;min-height:16px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="toolbar">
+  <select id="deckSel" onchange="switchDeck()"></select>
+  <button onclick="shuffle()">Shuffle</button>
+  <button onclick="restart()">Restart</button>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+<div class="card-area" onclick="flip()">
+  <div class="card" id="card">
+    <div class="side-tag" id="sideTag">Hiragana · Front</div>
+    <div id="frontView">
+      <div class="front-hira" id="fHira"></div>
+      <div class="front-romaji" id="fRomaji"></div>
+      <button class="speak-btn" id="speakBtn" onclick="speakCurrent(event)">
+        <svg class="speak-icon" viewBox="0 0 16 16" fill="none">
+          <path d="M9 2.5C9 2.5 11.5 4 11.5 8C11.5 12 9 13.5 9 13.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M12 1C12 1 15 3.5 15 8C15 12.5 12 15 12 15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <rect x="1" y="5.5" width="4" height="5" rx="1" fill="currentColor" opacity="0.8"/>
+          <path d="M5 6L8.5 3.5V12.5L5 10" fill="currentColor" opacity="0.8"/>
+        </svg>
+        <span id="speakLabel">Pronounce</span>
+      </button>
+    </div>
+    <div id="backView" style="display:none">
+      <div class="back-kanji" id="bKanji"></div>
+      <div class="back-chinese" id="bChinese"></div>
+      <div class="back-meaning" id="bMeaning"></div>
+    </div>
+    <div class="counter" id="counter"></div>
+  </div>
+</div>
+<div class="nav">
+  <button onclick="prevCard()">← Previous</button>
+  <button class="btn-play" id="playBtn" onclick="togglePlay()">▶ Play All</button>
+  <button onclick="nextCard()">Next →</button>
+</div>
+<div class="play-info" id="playInfo"></div>
+</div>
+
+<script>
+const ALL = {
+"Geography & Place":[
+["やま","Yama","山","山","Mountain (Yamanaka)"],
+["た / だ","Ta / Da","田","田","Rice Field (Tanaka, Honda)"],
+["かわ / がわ","Kawa / Gawa","川 / 河","川 / 河","River (Ishikawa)"],
+["しま / じま","Shima / Jima","岛","岛","Island (Hiroshima)"],
+["や / たに","Ya / Tani","谷","谷","Valley (Shibuya)"],
+["おか","Oka","冈","冈 / 丘","Hill (Okayama)"],
+["さき / ざき","Saki / Zaki","崎","崎 / 岬","Cape/Peninsula (Miyazaki)"],
+["はま","Hama","浜","滨","Beach (Yokohama)"],
+["さわ / ざわ","Sawa / Zawa","沢","泽","Marsh/Stream (Shibusawa)"],
+["い","I","井","井","Well (Mitsui, Inoue)"],
+["さか","Saka","坂","坂 / 坡","Slope (Sakamoto, Osaka)"],
+["はし / ばし","Hashi / Bashi","桥","桥","Bridge (Hashimoto)"],
+["うら","Ura","浦","浦 / 湾","Bay/Inlet (Miura)"],
+["ぬま","Numa","沼","沼","Swamp (Numata)"],
+["いずみ","Izumi","泉","泉","Spring/Fountain (Koizumi)"],
+["はら / ばら","Hara / Bara","原","原","Plain (Fujiwara, Harada)"],
+["の","No","野","野","Field (Nomura, Nagano)"],
+["さと","Sato","里","里 / 乡","Village/Hometown (Sato)"]
+],
+"Nature & Plants":[
+["もり","Mori","森","森","Forest (Morimoto, Mori)"],
+["まつ","Matsu","松","松","Pine Tree (Matsumoto)"],
+["すぎ","Sugi","杉","杉","Cedar (Sugiyama)"],
+["ふじ","Fuji","藤","藤","Wisteria (Fujiwara, Fuji)"],
+["さくら","Sakura","桜","樱","Cherry Blossom (Sakurai)"],
+["たけ","Take","竹","竹","Bamboo (Takeda)"],
+["き / ぎ","Ki / Gi","木","木","Tree (Kimura, Takagi)"],
+["はやし","Hayashi","林","林","Grove (Kobayashi, Hayashi)"],
+["きく","Kiku","菊","菊","Chrysanthemum (Kikuchi)"],
+["やなぎ","Yanagi","柳","柳","Willow (Yanagisawa)"],
+["くり","Kuri","栗","栗","Chestnut (Kurihara)"],
+["そら","Sora","空","空 / 天空","Sky"],
+["うみ","Umi","海","海","Sea/Ocean"],
+["かぜ","Kaze","風","风","Wind"],
+["あめ","Ame","雨","雨","Rain"],
+["ゆき","Yuki","雪","雪","Snow"],
+["ひかり","Hikari","光","光","Light"],
+["はな","Hana","花","花","Flower"]
+],
+"Animals":[
+["つる","Tsuru","鹤","鹤","Crane (Tsuruta)"],
+["かめ","Kame","亀","龟","Turtle (Kamei)"],
+["くま","Kuma","熊","熊","Bear (Kumamoto)"],
+["とら","Tora","虎","虎","Tiger"],
+["しか","Shika","鹿","鹿","Deer (Kagoshima)"]
+],
+"Directions & Position":[
+["ひがし / とう","Higashi / To","東","东","East (Tokyo, Higashi)"],
+["にし","Nishi","西","西","West (Nishimura, Nishi)"],
+["みなみ","Minami","南","南","South (Minami)"],
+["きた","Kita","北","北","North (Kitamura, Kita)"],
+["うえ / かみ","Ue / Kami","上","上","Upper/Above (Ueda)"],
+["した / しも","Shita / Shimo","下","下","Lower/Below (Shimoda)"],
+["なか","Naka","中","中","Middle/Inside (Tanaka)"],
+["そと","Soto","外","外","Outside"]
+],
+"Numbers":[
+["いち","Ichi","一","一","One"],
+["に","Ni","二","二","Two"],
+["みつ / さん","Mitsu / San","三","三","Three (Mitsubishi, Mitsui)"],
+["し / よん","Shi / Yon","四","四","Four"],
+["ご","Go","五","五","Five"],
+["ろく","Roku","六","六","Six"],
+["なな / しち","Nana / Shichi","七","七","Seven"],
+["はち","Hachi","八","八","Eight"],
+["きゅう","Kyu","九","九","Nine"],
+["じゅう","Ju","十","十","Ten"],
+["ひゃく","Hyaku","百","百","Hundred"],
+["ち / せん","Chi / Sen","千","千","Thousand (Chiba, Sendai)"],
+["まん","Man","万","万","Ten Thousand"]
+],
+"Size & Qualities":[
+["おお / だい","O / Dai","大","大","Large/Great (Osaka)"],
+["こ / お","Ko / O","小","小","Small (Kobayashi, Ogawa)"],
+["たか","Taka","高","高","Tall/High (Takagi, Takada)"],
+["なが","Naga","長","长","Long (Nagasaki, Nagano)"],
+["ふる","Furu","古","古","Old (Nagoya, Furuya)"],
+["しん / あたら","Shin / Atara","新","新","New (Shinjuku, Niigata)"],
+["もと / ほん","Moto / Hon","本","本","Root/Origin (Honda)"],
+["ひろ","Hiro","広","广 / 宽","Wide/Broad (Hiroshima)"],
+["うつくしい","Utsukushii","美しい","美丽","Beautiful"],
+["あたらしい","Atarashii","新しい","新","New"],
+["しずか","Shizuka","静か","安静","Quiet"],
+["つよい","Tsuyoi","強い","强","Strong"],
+["よい","Yoi","良い","好","Good"]
+],
+"Buildings & Places":[
+["しろ / じょう","Shiro / Jo","城","城","Castle (Yamashiro)"],
+["みや","Miya","宫","宫","Palace/Shrine (Miyazaki)"],
+["てら","Tera","寺","寺","Temple (Terada)"],
+["むら","Mura","村","村","Village (Murakami, Murata)"],
+["まち","Machi","町","町","Town/Street"],
+["きょう","Kyo","京","京","Capital (Tokyo, Kyoto)"],
+["と","To","都","都","Metropolis/Capital"],
+["くら","Kura","仓","仓","Storehouse (Kamakura)"],
+["どう","Do","堂","堂","Hall/Temple"],
+["にわ","Niwa","庭","庭","Garden/Yard"]
+],
+"Auspicious Words":[
+["ふく","Fuku","福","福","Luck/Blessing (Fukuoka)"],
+["よし","Yoshi","吉","吉","Good Fortune (Yoshida)"],
+["ゆき / こう","Yuki / Ko","幸","幸","Happiness"],
+["あん / やす","An / Yasu","安","安","Peace/Cheap (Abe, Yasuda)"],
+["しょう / まさ","Sho / Masa","正","正","Correct/Justice"],
+["めい / あき","Mei / Aki","明","明","Bright/Light (Meiji)"],
+["えい / なが","Ei / Naga","永","永","Eternal (Eiichi)"],
+["とよ","Toyo","豊","丰","Abundant (Toyota)"],
+["えい","Ei","栄","荣","Prosperous (Eiichi)"],
+["よし / ぎ","Yoshi / Gi","義","义","Justice/Duty"],
+["のぶ / しん","Nobu / Shin","信","信","Trust/Belief"],
+["わ","Wa","和","和","Harmony (Reiwa, Showa)"],
+["へい / ひら","Hei / Hira","平","平","Flat/Peace (Heisei)"]
+],
+"Greetings":[
+["こんにちは","Konnichiwa","こんにちは","你好","Hello (Daytime)"],
+["おはよう","Ohayou","おはよう","早安","Good Morning"],
+["こんばんは","Konbanwa","こんばんは","晚上好","Good Evening"],
+["ありがとう","Arigatou","ありがとう","谢谢","Thank you"],
+["すみません","Sumimasen","すみません","对不起/请问","Excuse me/Sorry"],
+["おねがいします","Onegaishimasu","お願いします","拜托了","Please (formal)"],
+["はい","Hai","はい","是","Yes"],
+["いいえ","Iie","いいえ","不是","No"],
+["わかりました","Wakarimashita","わかりました","明白了","I understand"],
+["だいじょうぶ","Daijoubu","大丈夫","没关系","It's okay"],
+["おつかれさま","Otsukaresama","お疲れ様","辛苦了","Thanks for work"],
+["さようなら","Sayounara","さようなら","再见","Goodbye"],
+["しつれいします","Shitsurei shimasu","失礼します","失礼了","Excuse me (entry/exit)"],
+["はじめまして","Hajimemashite","初めまして","初次见面","Nice to meet you"]
+],
+"Art & Culture":[
+["うきよえ","Ukiyo-e","浮世絵","浮世绘","Woodblock prints"],
+["わびさび","Wabi-sabi","侘寂","侘寂","Beauty in imperfection"],
+["ぜん","Zen","禅","禅","Zen Buddhism"],
+["さどう / ちゃどう","Sado / Chado","茶道","茶道","Tea Ceremony"],
+["とうき","Toki","陶器","陶器","Pottery"],
+["うるし","Urushi","漆","漆","Lacquer"],
+["ていえん","Teien","庭園","庭园","Garden"],
+["ふすま","Fusuma","襖","障子/滑门","Sliding door (opaque)"],
+["たたみ","Tatami","畳","榻榻米","Straw mat flooring"],
+["えんがわ","Engawa","縁側","缘侧","Veranda/Porch"],
+["かれさんすい","Karesansui","枯山水","枯山水","Dry rock garden"],
+["しゃっけい","Shakkei","借景","借景","Borrowed scenery"],
+["じんじゃ","Jinja","神社","神社","Shinto shrine"],
+["とりい","Torii","鸟居","鸟居","Shrine gate"]
+],
+"Finance & Business":[
+["けいざい","Keizai","経済","经济","Economy"],
+["しほん","Shihon","資本","资本","Capital"],
+["かぶ","Kabu","株","股票","Stock"],
+["しょうけん","Shoken","証券","证券","Securities"],
+["ぎんこう","Ginko","銀行","银行","Bank"],
+["とうし","Toshi","投資","投资","Investment"],
+["いちば / しじょう","Ichiba / Shijo","市場","市场","Market"],
+["とりひき","Torihiki","取引","交易","Trade/Transaction"],
+["ざいばつ","Zaibatsu","財閥","财阀","Financial Conglomerate"],
+["かいしゃ","Kaisha","会社","公司","Company"],
+["かいちょう","Kaicho","会長","会长","Chairman"],
+["しゃちょう","Shacho","社長","社长","President/CEO"],
+["りえき","Rieki","利益","利润","Profit"],
+["さきもの","Sakimono","先物","期货","Futures"]
+],
+"Time & Seasons":[
+["ねん","Nen","年","年","Year"],
+["がつ / つき","Gatsu / Tsuki","月","月","Month/Moon"],
+["にち / ひ","Nichi / Hi","日","日","Day/Sun"],
+["いま","Ima","今","现在","Now"],
+["むかし","Mukashi","昔","以前","Long ago"],
+["あさ","Asa","朝","早晨","Morning"],
+["よる","Yoru","夜","夜晚","Night"],
+["はる","Haru","春","春","Spring"],
+["なつ","Natsu","夏","夏","Summer"],
+["あき","Aki","秋","秋","Autumn"],
+["ふゆ","Fuyu","冬","冬","Winter"]
+],
+"Verbs":[
+["いく","Iku","行く","去","To go"],
+["くる","Kuru","来る","来","To come"],
+["みる","Miru","見る","看","To see"],
+["はなす","Hanasu","話す","说","To speak"]
+],
+"People & Society":[
+["ひと / じん","Hito / Jin","人","人","Person"],
+["とも","Tomo","友","友","Friend"],
+["ぶし","Bushi","武士","武士","Warrior/Samurai"],
+["せんせい","Sensei","先生","老师","Teacher/Master"],
+["がくせい","Gakusei","学生","学生","Student"],
+["かぞく","Kazoku","家族","家族","Family"],
+["しごと","Shigoto","仕事","工作","Work/Job"],
+["べんきょう","Benkyo","勉強","学习","Study"]
+],
+"Historical Periods":[
+["えど","Edo","江戸","江戸","Edo Period"],
+["めいじ","Meiji","明治","明治","Meiji Period"],
+["しょうわ","Showa","昭和","昭和","Showa Period"],
+["へいせい","Heisei","平成","平成","Heisei Period"],
+["れいわ","Reiwa","令和","令和","Reiwa Period"]
+],
+"Body & Senses":[
+["こころ","Kokoro","心","心","Heart/Spirit"],
+["て","Te","手","手","Hand"],
+["め","Me","目","目 / 眼","Eye"],
+["あし","Ashi","足","足 / 脚","Foot/Leg"]
+],
+"Food & Drink":[
+["さけ","Sake","酒","酒","Alcohol/Sake"],
+["ちゃ","Cha","茶","茶","Tea"],
+["こめ","Kome","米","米","Rice (grain)"],
+["めし / ごはん","Meshi / Gohan","飯","饭","Meal/Cooked rice"]
+],
+"Expressions":[
+["たぶん","Tabun","多分","可能","Maybe"],
+["ほんとうに","Hontou ni","本当に","真的","Truly/Really"],
+["ぜんぜん","Zenzen","全然","完全不","Not at all"],
+["けっこう","Kekkou","結構","很好 / 足够","Fine/Sufficient"],
+["もちろん","Mochiron","勿論","当然","Of course"],
+["はじめて","Hajimete","初めて","第一次","For the first time"],
+["さいご","Saigo","最後","最后","Last/Final"]
+]
+};
+
+const DECK_ALL="All cards (195)";
+let decks={[DECK_ALL]:Object.values(ALL).flat()};
+Object.entries(ALL).forEach(([k,v])=>decks[k]=v);
+let current=DECK_ALL,cards=[],idx=0,flipped=false;
+let jpVoice=null,playing=false,playTimer=null;
+const PLAY_DELAY=2200;
+
+function loadVoices(){
+  const v=window.speechSynthesis.getVoices();
+  jpVoice=v.find(x=>x.lang==='ja-JP')||v.find(x=>x.lang.startsWith('ja'))||null;
+}
+if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=loadVoices;loadVoices();}
+
+function speakText(text,onDone){
+  if(!window.speechSynthesis){onDone&&onDone();return;}
+  window.speechSynthesis.cancel();
+  const utt=new SpeechSynthesisUtterance(text.split(' / ')[0]);
+  utt.lang='ja-JP';utt.rate=0.85;utt.pitch=1.0;
+  if(jpVoice)utt.voice=jpVoice;
+  utt.onend=()=>{onDone&&onDone();};
+  utt.onerror=()=>{onDone&&onDone();};
+  window.speechSynthesis.speak(utt);
+}
+
+function speakCurrent(e){
+  e&&e.stopPropagation();
+  if(!cards[idx])return;
+  const btn=document.getElementById('speakBtn'),lbl=document.getElementById('speakLabel');
+  btn.classList.add('speaking');lbl.textContent='Speaking…';
+  speakText(cards[idx][0],()=>{btn.classList.remove('speaking');lbl.textContent='Pronounce';});
+}
+
+function init(){
+  const sel=document.getElementById('deckSel');
+  sel.innerHTML=Object.keys(decks).map(k=>`<option value="${k}">${k}${k===DECK_ALL?'':' ('+decks[k].length+')'}</option>`).join('');
+  restart();
+}
+
+function switchDeck(){current=document.getElementById('deckSel').value;stopPlay();restart();}
+function shuffle(){
+  cards=[...(decks[current]||[])];
+  for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}
+  idx=0;stopPlay();showCard();
+}
+function restart(){cards=[...(decks[current]||[])];idx=0;stopPlay();showCard();}
+
+function showCard(){
+  if(!cards.length)return;
+  flipped=false;
+  const c=cards[idx];
+  document.getElementById('card').className='card';
+  document.getElementById('sideTag').textContent='Hiragana · Front';
+  document.getElementById('frontView').style.display='';
+  document.getElementById('backView').style.display='none';
+  document.getElementById('fHira').textContent=c[0];
+  document.getElementById('fRomaji').textContent=c[1];
+  document.getElementById('speakLabel').textContent='Pronounce';
+  document.getElementById('speakBtn').classList.remove('speaking');
+  document.getElementById('counter').textContent=(idx+1)+' of '+cards.length;
+  document.getElementById('prog').style.width=Math.round((idx/(cards.length-1||1))*100)+'%';
+}
+
+function flip(){
+  if(!cards[idx])return;
+  if(!flipped){
+    flipped=true;
+    const c=cards[idx];
+    document.getElementById('card').className='card back';
+    document.getElementById('sideTag').textContent='Kanji · Back';
+    document.getElementById('frontView').style.display='none';
+    document.getElementById('backView').style.display='';
+    document.getElementById('bKanji').textContent=c[2];
+    document.getElementById('bChinese').textContent=c[3];
+    document.getElementById('bMeaning').textContent=c[4];
+  } else { showCard(); }
+}
+
+function prevCard(){stopPlay();if(idx>0){idx--;showCard();}}
+function nextCard(){stopPlay();if(idx<cards.length-1){idx++;showCard();}}
+function togglePlay(){if(playing){stopPlay();}else{startPlay();}}
+
+function startPlay(){
+  playing=true;
+  document.getElementById('playBtn').textContent='■ Stop';
+  document.getElementById('playBtn').classList.add('active');
+  playStep();
+}
+function playStep(){
+  if(!playing)return;
+  showCard();
+  document.getElementById('playInfo').textContent='Playing '+(idx+1)+' of '+cards.length+'…';
+  speakText(cards[idx][0],()=>{
+    if(!playing)return;
+    playTimer=setTimeout(()=>{
+      if(!playing)return;
+      if(idx<cards.length-1){idx++;playStep();}
+      else{stopPlay();document.getElementById('playInfo').textContent='Done — all '+cards.length+' cards played.';}
+    },PLAY_DELAY);
+  });
+}
+function stopPlay(){
+  playing=false;clearTimeout(playTimer);
+  window.speechSynthesis&&window.speechSynthesis.cancel();
+  document.getElementById('playBtn').textContent='▶ Play All';
+  document.getElementById('playBtn').classList.remove('active');
+  document.getElementById('playInfo').textContent='';
+}
+
+init();
+</script>
+</body>
+</html>
