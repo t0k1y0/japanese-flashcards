@@ -1,497 +1,187 @@
 
 <style>
 *{box-sizing:border-box}
-.app{padding:1rem 0;font-size:14px}
+.wrap{display:flex;justify-content:center;padding:.5rem 0 1rem}
+.app{width:100%;max-width:520px;font-size:14px}
 .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
 .toolbar select{font-size:13px;padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);flex:1;min-width:140px}
 .toolbar button{font-size:13px;padding:6px 12px;white-space:nowrap}
 .progress-bar{height:4px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:14px;overflow:hidden}
 .progress-fill{height:100%;background:#185FA5;border-radius:2px;transition:width .3s}
 .card-area{cursor:pointer;user-select:none;margin-bottom:14px}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:24px 24px 18px;min-height:240px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;transition:border-color .15s}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:24px 22px 18px;min-height:260px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;transition:border-color .15s}
 .card:hover{border-color:var(--color-border-primary)}
 .card.back{background:var(--color-background-secondary)}
 .side-tag{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:14px}
-.front-word{font-size:42px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;font-family:var(--font-serif),Georgia,serif;line-height:1.15}
-.front-example{font-size:13.5px;color:var(--color-text-secondary);line-height:1.7;max-width:480px;font-style:italic;margin-bottom:0}
-.front-example em{font-style:normal;color:var(--color-text-primary);font-weight:500;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(24,95,165,0.35)}
-.back-en{font-size:22px;color:var(--color-text-primary);line-height:1.4;max-width:400px}
+.front-word{font-size:40px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;line-height:1.15}
+.front-example{font-size:13px;color:var(--color-text-secondary);line-height:1.75;max-width:440px;font-style:italic;margin-bottom:10px}
+.front-example em{font-style:normal;color:var(--color-text-primary);font-weight:500;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(24,95,165,0.4)}
+.speak-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;transition:border-color .15s,background .15s;margin-top:2px}
+.speak-btn:hover{border-color:var(--color-border-primary);background:var(--color-background-secondary)}
+.speak-btn.speaking{border-color:#185FA5;color:#185FA5;background:#E6F1FB}
+.speak-icon{width:14px;height:14px;flex-shrink:0}
+.back-en-word{font-size:22px;color:var(--color-text-primary);line-height:1.4;max-width:400px;margin-bottom:14px;font-weight:500}
+.back-en-sentence{font-size:13px;color:var(--color-text-secondary);font-style:italic;line-height:1.7;max-width:420px;padding-top:12px;border-top:0.5px solid var(--color-border-tertiary)}
 .counter{font-size:12px;color:var(--color-text-tertiary);margin-top:14px}
 .nav{display:flex;gap:8px;margin-bottom:4px;align-items:center}
 .nav button{flex:1;padding:10px;font-size:13px;font-weight:500}
-.btn-play{border-color:#185FA5 !important;color:#0C447C !important}
-.btn-play:hover{background:#E6F1FB !important}
-.btn-play.active{background:#185FA5 !important;color:#fff !important;border-color:#185FA5 !important}
-.play-info{font-size:11px;color:var(--color-text-tertiary);text-align:center;min-height:16px}
+.btn-play{border-color:#185FA5!important;color:#0C447C!important}
+.btn-play:hover{background:#E6F1FB!important}
+.btn-play.active{background:#185FA5!important;color:#fff!important;border-color:#185FA5!important}
+.play-info{font-size:11px;color:var(--color-text-tertiary);text-align:center;min-height:16px;margin-top:4px}
 </style>
-
-<div class="app">
+<div class="wrap"><div class="app">
 <div class="toolbar">
   <select id="deckSel" onchange="switchDeck()"></select>
   <button onclick="shuffle()">Shuffle</button>
   <button onclick="restart()">Restart</button>
 </div>
 <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
-
 <div class="card-area" onclick="flip()">
   <div class="card" id="card">
     <div class="side-tag" id="sideTag">Français · Recto</div>
     <div id="frontView">
       <div class="front-word" id="fWord"></div>
       <div class="front-example" id="fExample"></div>
+      <button class="speak-btn" id="speakBtn" onclick="speakCurrent(event)">
+        <svg class="speak-icon" viewBox="0 0 16 16" fill="none">
+          <path d="M9 2.5C9 2.5 11.5 4 11.5 8C11.5 12 9 13.5 9 13.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M12 1C12 1 15 3.5 15 8C15 12.5 12 15 12 15" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <rect x="1" y="5.5" width="4" height="5" rx="1" fill="currentColor" opacity="0.8"/>
+          <path d="M5 6L8.5 3.5V12.5L5 10" fill="currentColor" opacity="0.8"/>
+        </svg>
+        <span id="speakLabel">Prononcer</span>
+      </button>
     </div>
     <div id="backView" style="display:none">
-      <div class="back-en" id="bEn"></div>
+      <div class="back-en-word" id="bEnWord"></div>
+      <div class="back-en-sentence" id="bEnSentence"></div>
     </div>
     <div class="counter" id="counter"></div>
   </div>
 </div>
-
 <div class="nav">
   <button onclick="prevCard()">← Précédent</button>
   <button class="btn-play" id="playBtn" onclick="togglePlay()">▶ Tout jouer</button>
   <button onclick="nextCard()">Suivant →</button>
 </div>
 <div class="play-info" id="playInfo"></div>
-</div>
-
+</div></div>
 <script>
-const ALL = {
-"Verbes courants (1)":[
-["ceinture","Elle a serré sa ceinture après avoir perdu du poids.","belt / waist"],
-["digne","Il a répondu de manière digne malgré les insultes.","worthy / dignified"],
-["gâcher","Ne gâche pas cette opportunité, tu ne la retrouveras pas.","to waste / to ruin"],
-["prises","Les deux équipes sont aux prises depuis le début du match.","grip / outlets / taken"],
-["congé","Elle a pris un congé maladie pour se remettre de l'opération.","leave / holiday"],
-["repartir","Après une courte pause, ils ont décidé de repartir.","to set off again / to restart"],
-["pourri","Le bois était tellement pourri qu'il s'est effondré.","rotten / awful"],
-["bétail","Le fermier surveille son bétail tous les matins.","livestock / cattle"],
-["bonté","Sa bonté envers les étrangers est remarquable.","kindness / goodness"],
-["bouffer","On va bouffer une pizza ce soir, ça te va ?","to eat (fam.) / to gobble"],
-["guérir","Il a fallu trois semaines pour guérir de cette grippe.","to heal / to cure"],
-["coule","La rivière coule doucement entre les collines.","flows / sinks"],
-["enlevez","Enlevez vos chaussures avant d'entrer, s'il vous plaît.","remove / take off"],
-["piqué","Il s'est fait piquer par une guêpe en jardant.","stung / stolen / quirky"],
-["remise","La remise de 20% s'applique à tous les articles en solde.","discount / shed / delivery"],
-["sou","Je n'ai pas un sou en poche ce soir.","penny / cent (old)"],
-["abattre","La tempête a abattu plusieurs arbres dans le parc.","to knock down / to slaughter / to shoot"],
-["dégâts","Les dégâts causés par l'inondation sont considérables.","damage / harm"],
-["serré","Le programme de cette semaine est très serré.","tight / close / strong"],
-["merveille","Ce château est une véritable merveille architecturale.","wonder / marvel"]
-],
-"Verbes courants (2)":[
-["fuite","La fuite d'eau a causé des dégâts au plafond.","leak / flight / escape"],
-["humeur","Il est de mauvaise humeur ce matin, ne lui parle pas.","mood / humor"],
-["rendre","Tu dois rendre ce livre à la bibliothèque avant vendredi.","to give back / to make / to render"],
-["frapper","Elle a frappé à la porte mais personne n'a répondu.","to hit / to strike / to knock"],
-["peine","Ce n'est pas la peine de te dépêcher, nous avons le temps.","pain / sorrow / penalty"],
-["fainéant","Ne sois pas aussi fainéant, tu as des devoirs à finir !","lazy / slacker"],
-["dépens","Il a appris à ses dépens qu'on ne peut pas toujours mentir.","expense / cost"],
-["quitter","Elle a décidé de quitter son emploi pour voyager.","to leave / to quit"],
-["bavard","Mon voisin est très bavard, il parle pendant des heures.","talkative / chatterbox"],
-["ennui","L'ennui du dimanche après-midi l'a poussé à lire.","boredom / trouble / worry"],
-["comble","C'est le comble ! Après tout ce travail, il refuse de payer.","peak / height / attic"],
-["vieux","Ce vieux quartier conserve tout son charme d'antan.","old / elderly / aged"],
-["passer","Elle passe ses vacances à lire au bord de la mer.","to pass / to spend / to go by"],
-["feu","Les pompiers ont éteint le feu en moins d'une heure.","fire / traffic light / late (deceased)"],
-["abord","De prime abord, cette tâche semble difficile mais elle ne l'est pas.","approach / manner / first"],
-["entendu","C'est entendu, nous nous retrouvons demain à dix heures.","understood / heard / agreed"],
-["malheur","À son grand malheur, il a raté son train de justesse.","misfortune / unhappiness"],
-["propre","Garde ta chambre propre, s'il te plaît.","clean / own / proper"],
-["traîner","Il ne faut pas traîner, la réunion commence dans dix minutes.","to drag / to hang around / to linger"],
-["fond","Il nage jusqu'au fond de la piscine sans effort.","bottom / back / depth / background"]
-],
-"Verbes essentiels":[
-["coup","D'un seul coup, tout s'est mis à changer.","blow / hit / shot / move"],
-["détour","Nous avons fait un détour par Lyon pour voir des amis.","detour / roundabout way"],
-["compte","Il faut tenir compte des avis de tous les membres.","account / count / importance"],
-["souffrir","Elle souffre depuis plusieurs années de migraines chroniques.","to suffer / to endure"],
-["tour","C'est ton tour de faire la vaisselle ce soir.","turn / tower / tour / trick"],
-["sauter","Il a sauté par-dessus la barrière sans s'arrêter.","to jump / to skip / to blow up"],
-["manque","Le manque de sommeil affecte la concentration.","lack / shortage / miss"],
-["rater","J'ai raté mon bus et je suis arrivé en retard.","to miss / to fail / to mess up"],
-["bouger","Ne bougez pas, le médecin arrive dans un instant.","to move / to budge"],
-["malin","Il est assez malin pour trouver une solution rapidement.","clever / sly / shrewd"],
-["vif","Elle a un esprit vif et répond toujours rapidement.","lively / sharp / keen / vivid"],
-["manière","Il a réussi à convaincre tout le monde à sa manière.","manner / way / style"],
-["trou","Il y a un trou dans la chaussée depuis des semaines.","hole / gap / backwater"],
-["raconter","Elle lui a raconté toute l'histoire depuis le début.","to tell / to narrate"],
-["embrouiller","Ses explications n'ont fait qu'embrouiller la situation.","to muddle / to confuse"],
-["plaisanter","Tu plaisantes j'espère, c'est impossible à faire en un jour !","to joke / to jest"],
-["laisser","Laisse-moi tranquille, j'essaie de me concentrer.","to leave / to let / to allow"],
-["garder","Il garde toujours son calme même dans les moments difficiles.","to keep / to guard / to look after"],
-["marcher","Est-ce que ta nouvelle voiture marche bien ?","to walk / to work / to go"],
-["sortir","Elle sort avec ses amis tous les vendredis soir.","to go out / to take out / to come out"]
-],
-"Verbes de base":[
-["mettre","Mets ton manteau, il fait froid dehors.","to put / to place / to wear"],
-["lever","Il se lève tous les matins à six heures précises.","to raise / to lift / to get up"],
-["tenir","Tiens ta promesse, tu lui as donné ta parole.","to hold / to keep / to last"],
-["porter","Elle porte toujours des vêtements colorés et originaux.","to carry / to wear / to bear"],
-["entendre","J'entends ce que tu dis mais je ne suis pas d'accord.","to hear / to understand / to mean"],
-["perdre","Il a perdu ses clés quelque part dans la maison.","to lose / to waste"],
-["dire","Dis-moi ce qui s'est passé, je ne comprends pas.","to say / to tell"],
-["craindre","Elle craint de ne pas réussir cet examen crucial.","to fear / to be afraid of"],
-["tomber","Il est tombé dans l'escalier et s'est blessé au genou.","to fall / to drop / to come"],
-["courir","Il court cinq kilomètres chaque matin avant le travail.","to run / to rush"],
-["mener","Elle mène une vie saine et équilibrée depuis des années.","to lead / to conduct / to carry out"],
-["prendre","Prends le temps de bien réfléchir avant de décider.","to take / to catch / to have"],
-["chercher","Je cherche mes lunettes depuis une heure sans les trouver.","to look for / to search / to pick up"],
-["sentir","Elle sent que quelque chose ne va pas dans cette situation.","to smell / to feel / to sense"],
-["connaître","Je connais cette ville comme ma poche.","to know / to be familiar with"],
-["trouver","J'ai enfin trouvé un appartement qui me convient.","to find / to think / to consider"],
-["apprendre","Elle apprend le japonais depuis deux ans avec passion.","to learn / to teach / to hear"],
-["aimer","J'aime beaucoup me promener dans la forêt le matin.","to love / to like"],
-["voir","Je vois ce que tu veux dire, mais je ne suis pas d'accord.","to see / to meet / to understand"],
-["vouloir","Je voudrais vous parler d'un sujet important.","to want / to wish"]
-],
-"Verbes avancés":[
-["penser","Je pense qu'il faudrait revoir notre stratégie.","to think / to believe / to consider"],
-["rester","Il reste encore beaucoup de travail à faire ce soir.","to stay / to remain / to be left"],
-["jouer","Elle joue du piano depuis l'âge de cinq ans.","to play / to act / to gamble"],
-["donner","Ce médicament donne parfois des effets secondaires.","to give / to produce / to cause"],
-["vivre","Il vit seul depuis son déménagement à Paris.","to live / to experience"],
-["savoir","Je sais que c'est difficile mais tu peux y arriver.","to know / to be able to"],
-["croire","Je crois sincèrement qu'il dit la vérité.","to believe / to think / to trust"],
-["changer","Les choses ont beaucoup changé depuis notre dernière rencontre.","to change / to exchange / to transform"],
-["partir","Elle part en voyage d'affaires demain matin.","to leave / to go / to start"],
-["arriver","Il arrive toujours en avance à ses rendez-vous.","to arrive / to happen / to manage"],
-["travailler","Elle travaille sur un projet très ambitieux en ce moment.","to work / to practice / to process"],
-["devenir","Elle est devenue une experte reconnue dans son domaine.","to become / to get"],
-["reprendre","Il a repris le travail deux semaines après son opération.","to resume / to take back / to recover"],
-["montrer","Montre-moi comment faire, je ne comprends pas le mode d'emploi.","to show / to point out / to demonstrate"],
-["rappeler","Ce paysage me rappelle mes vacances en Bretagne.","to remind / to recall / to call back"],
-["permettre","Ce visa nous permet de rester six mois dans le pays.","to allow / to enable / to afford"],
-["sembler","Il semble que la réunion soit annulée pour cause de grève.","to seem / to appear"],
-["appeler","Il m'a appelé ce matin pour me donner les dernières nouvelles.","to call / to name / to appeal to"],
-["suivre","Je suis un cours de cuisine tous les mercredis.","to follow / to take / to keep up with"],
-["réussir","Il a réussi à convaincre tout le jury en quelques minutes.","to succeed / to pass / to manage"]
-],
-"Argot & familier":[
-["crever","Le pneu de sa voiture a crevé sur l'autoroute.","to burst / to be exhausted / to die (fam.)"],
-["sécher","Elle sèche ses vêtements sur le balcon quand il fait beau.","to dry / to skip class (fam.) / to be stuck"],
-["claquer","Il a claqué la porte en partant, il était vraiment en colère.","to slam / to snap / to spend lavishly"],
-["coller","Cette affiche ne colle pas bien sur ce mur humide.","to stick / to glue / to fit"],
-["ficher","Fiche-moi la paix, je dois finir ce rapport pour demain.","to give / to put (fam.) / to file"],
-["filer","Il a filé sans dire au revoir à personne.","to slip away / to give (fam.) / to spin"],
-["boucler","Elle a bouclé son rapport en un temps record.","to buckle / to finish / to curl"],
-["planquer","Il a planqué les cadeaux pour que les enfants ne les trouvent pas.","to hide / to stash (fam.)"],
-["geindre","Arrête de geindre et fais quelque chose pour résoudre le problème.","to whine / to moan / to groan"],
-["flemme","J'ai la flemme de cuisiner ce soir, on commande ?","laziness / can't be bothered (fam.)"],
-["galère","Trouver un appartement à Paris, c'est vraiment la galère.","struggle / hassle / hardship (fam.)"],
-["galérer","Il a galéré pendant des heures avant de trouver la solution.","to struggle / to have a hard time (fam.)"],
-["kiffer","Elle kiffe vraiment son nouveau travail, elle est épanouie.","to love / to be into (fam.)"],
-["pécho","Il a pécho un rhume en restant dehors sous la pluie.","to pick up / to catch (fam.)"],
-["larguer","Elle l'a largué après deux ans de relation.","to dump / to drop / to release"],
-["tronche","Tu fais une de ces tronches, qu'est-ce qui t'arrive ?","face / head (fam.)"],
-["pote","Il est sorti avec ses potes après le travail.","friend / buddy / pal (fam.)"],
-["taré","Ce type est complètement taré, il conduit à 200 km/h !","crazy / nuts / nutcase (fam.)"],
-["zarbi","Cette situation est vraiment zarbi, je ne comprends pas.","weird / bizarre (verlan fam.)"],
-["chelou","Il y a un truc chelou dans cette histoire, méfie-toi.","shady / weird / suspicious (verlan fam.)"],
-["ouf","Ce concert était complètement ouf, une ambiance incroyable.","insane / crazy / great (verlan fam.)"],
-["relou","Ce collègue est vraiment relou avec ses remarques constantes.","annoying / a pain (verlan fam.)"],
-["vachement","Ce film est vachement bien, tu devrais le voir.","really / very / awfully (fam.)"],
-["pété","Mon téléphone est complètement pété depuis que je l'ai fait tomber.","broken / wasted / crazy (fam.)"],
-["jules","Son jules l'a surprise avec un bouquet de fleurs ce matin.","boyfriend / bloke (fam.)"]
-],
-"Adverbes & connecteurs":[
-["carrément","Il a carrément refusé de participer à la réunion.","completely / totally / straight out"],
-["franchement","Franchement, je ne pense pas que cette idée soit bonne.","frankly / honestly / really"],
-["grave","C'est grave bien ce qu'il fait, je suis impressionné.","seriously / really (fam.) / serious"],
-["encore","Il pleut encore ce matin, la météo est vraiment maussade.","still / again / more / yet"],
-["toujours","Elle est toujours prête à aider ses collègues.","always / still / ever"],
-["jamais","Il ne l'a jamais rencontrée malgré leurs nombreux échanges.","never / ever"],
-["souvent","Elle va souvent au marché le samedi matin.","often / frequently"],
-["parfois","Il est parfois difficile de prendre les bonnes décisions.","sometimes / at times"],
-["peut-être","Peut-être qu'il viendra, mais je n'en suis pas certain.","maybe / perhaps / possibly"],
-["vraiment","Je suis vraiment désolé d'avoir oublié notre rendez-vous.","really / truly / genuinely"],
-["surtout","Surtout, n'oublie pas de sauvegarder ton travail régulièrement.","above all / especially / most importantly"],
-["plutôt","Je préférerais plutôt rester chez moi ce soir.","rather / quite / instead"],
-["quand même","Il a réussi quand même malgré toutes les difficultés.","still / all the same / even so"],
-["d'ailleurs","D'ailleurs, j'allais justement t'appeler pour te parler de ça.","besides / moreover / incidentally"],
-["pourtant","Il est parti tôt, pourtant il n'est pas encore arrivé.","yet / however / still"],
-["cependant","La tâche est complexe ; cependant, elle reste réalisable.","however / nevertheless / yet"],
-["néanmoins","Il a échoué ; néanmoins, il garde confiance en lui.","nevertheless / nonetheless"],
-["toutefois","La situation est grave ; toutefois, des solutions existent.","however / nevertheless / that said"],
-["or","Or, il s'avère que cette hypothèse était fausse dès le départ.","now / but / yet (logical connector)"],
-["donc","Il a travaillé dur ; donc, il mérite cette promotion.","so / therefore / thus"],
-["ainsi","Il a changé ses habitudes et s'est ainsi amélioré.","thus / in this way / so"],
-["alors","Alors, qu'est-ce que tu as décidé finalement ?","then / so / at that time"],
-["ensuite","On mange d'abord, ensuite on discute de ce projet.","then / next / afterwards"],
-["enfin","Il a enfin obtenu le poste qu'il souhaitait depuis longtemps.","finally / at last / well"],
-["d'abord","D'abord, vérifions que nous avons toutes les informations.","first / firstly / at first"]
-],
-"Prépositions & petits mots":[
-["puis","Il a étudié, puis il a travaillé à l'étranger.","then / next / afterwards"],
-["après","Après la réunion, nous irons déjeuner ensemble.","after / afterwards / later"],
-["avant","Réfléchis bien avant de prendre une décision définitive.","before / previously / in front"],
-["depuis","Elle habite dans cette ville depuis plus de dix ans.","since / for (time duration)"],
-["pendant","Pendant les travaux, il a habité chez ses parents.","during / for (duration) / while"],
-["jusqu'à","Il a travaillé jusqu'à minuit pour finir son rapport.","until / up to / as far as"],
-["dès","Dès son arrivée, elle a commencé à travailler.","from / as soon as / starting from"],
-["vers","Il rentrera vers dix-neuf heures ce soir.","towards / around / about (time)"],
-["entre","Entre les deux options, il a choisi la plus risquée.","between / among / within"],
-["parmi","Elle se sentait bien parmi ses nouveaux collègues.","among / amongst / amid"],
-["malgré","Malgré la pluie, ils ont maintenu la fête en plein air.","despite / in spite of"],
-["selon","Selon les experts, la situation devrait s'améliorer.","according to / depending on"],
-["grâce","Grâce à ton aide, j'ai pu finir à temps.","thanks to / grace / favour"],
-["faute","Faute de temps, il n'a pas pu relire son travail.","fault / mistake / lack"],
-["afin","Elle a étudié davantage afin de réussir son examen.","in order to / so that"],
-["voilà","Voilà le document que vous m'avez demandé hier.","here is / there is / that's it"],
-["tiens","Tiens, je ne savais pas que tu connaissais cette personne !","here / hold / look / really (surprise)"],
-["bref","Bref, pour résumer, il faut changer notre approche.","in short / brief / anyway"],
-["quoi","Quoi qu'il arrive, nous ferons face ensemble.","what / which / huh"],
-["genre","Ce genre de situation est difficile à gérer seul.","kind / type / style / like (fam.)"],
-["machin","Passe-moi le machin là-bas, le truc pour ouvrir les boîtes.","thing / whatsit / thingamajig (fam.)"],
-["truc","J'ai un truc à te dire, mais c'est entre nous.","thing / stuff / trick (fam.)"],
-["chose","Il y a une chose importante dont je dois te parler.","thing / matter / something"],
-["façon","Il a une façon bien à lui d'expliquer les choses.","way / manner / fashion"]
-],
-"Noms abstraits":[
-["bord","Elle s'est assise au bord de la fenêtre pour lire.","edge / side / board / shore"],
-["bout","Au bout du couloir, vous trouverez la salle de conférence.","end / tip / piece / bit"],
-["côté","De quel côté du bâtiment est l'entrée principale ?","side / aspect / nearby"],
-["endroit","C'est l'endroit idéal pour organiser une réunion d'équipe.","place / spot / right side"],
-["lieu","La réunion aura lieu au siège de l'entreprise demain.","place / location / occasion"],
-["moment","C'est le bon moment pour aborder ce sujet délicat.","moment / time / period"],
-["fois","C'est la première fois qu'il visite cette région magnifique.","time / occasion / instance"],
-["sens","Dans quel sens faut-il tourner pour aller au centre ?","meaning / direction / sense"],
-["suite","La suite de l'histoire sera révélée dans le prochain épisode.","continuation / sequence / following"],
-["ensemble","Ils ont travaillé ensemble sur ce projet pendant six mois.","together / set / whole"],
-["rapport","Quel est le rapport entre ces deux événements ?","report / relationship / ratio"],
-["accord","Nous sommes d'accord sur les grandes lignes du projet.","agreement / chord / deal"],
-["sujet","Quel est le sujet principal de ta thèse de doctorat ?","subject / topic / reason / person"],
-["terme","À terme, ce projet devrait générer des bénéfices importants.","term / end / word / period"],
-["mesure","Il faut prendre des mesures urgentes pour résoudre ce problème.","measure / extent / step / degree"],
-["force","La force de ce projet réside dans sa simplicité.","strength / force / power"],
-["besoin","Elle a besoin de temps pour réfléchir à cette décision.","need / necessity"],
-["envie","Il a envie de tout changer dans sa vie professionnelle.","desire / wish / craving"],
-["occasion","C'est une occasion unique de rencontrer des experts du domaine.","opportunity / occasion / bargain"],
-["chance","Elle a eu la chance d'être sélectionnée parmi mille candidats.","luck / chance / opportunity"]
-],
-"Émotions & sentiments":[
-["joie","Sa joie était visible quand elle a appris la nouvelle.","joy / happiness / delight"],
-["chagrin","Elle a du chagrin depuis la disparition de son ami.","sorrow / grief / sadness"],
-["honte","Il a honte de n'avoir pas tenu sa promesse.","shame / embarrassment"],
-["fierté","La fierté de ses parents était visible lors de la cérémonie.","pride / self-respect"],
-["regret","Il exprime ses regrets pour n'avoir pas agi plus tôt.","regret / sorrow / disappointment"],
-["espoir","Malgré les difficultés, elle n'a jamais perdu espoir.","hope / expectation"],
-["confiance","La confiance est indispensable dans une bonne relation de travail.","trust / confidence / faith"],
-["méfiance","Sa méfiance envers les inconnus est tout à fait compréhensible.","distrust / suspicion / wariness"],
-["jalousie","La jalousie peut détruire même les meilleures amitiés.","jealousy / envy / venetian blind"],
-["tendresse","Elle manifeste beaucoup de tendresse envers ses proches.","tenderness / affection / fondness"],
-["colère","Il a du mal à contrôler sa colère dans les situations stressantes.","anger / rage / fury"],
-["tristesse","Une profonde tristesse envahit la salle lors de l'annonce.","sadness / sorrow / gloom"],
-["angoisse","L'angoisse avant les examens est un sentiment très répandu.","anxiety / anguish / dread"],
-["soulagement","Quel soulagement de savoir que tout va bien finalement !","relief / alleviation"],
-["surprise","À notre grande surprise, il a accepté toutes nos conditions.","surprise / shock / amazement"],
-["déception","Sa déception était grande après tant d'efforts fournis.","disappointment / letdown"],
-["admiration","Elle regarde ce peintre avec beaucoup d'admiration.","admiration / wonder / respect"],
-["mépris","Il traite ses subordonnés avec un mépris injustifiable.","contempt / scorn / disdain"],
-["pitié","Elle a aidé cet homme par pitié, non par obligation.","pity / compassion / mercy"],
-["orgueil","Son orgueil démesuré lui coûte souvent des amis.","pride / arrogance / vanity"]
-],
-"Qualités & vertus":[
-["pudeur","Elle parle de ses émotions avec une pudeur touchante.","modesty / decency / reserve"],
-["lucidité","Sa lucidité face à la crise a été saluée par tous.","lucidity / clear-headedness"],
-["loyauté","Sa loyauté envers l'entreprise n'a jamais été mise en doute.","loyalty / faithfulness / allegiance"],
-["sagesse","La sagesse s'acquiert souvent avec l'expérience et le temps.","wisdom / prudence / sense"],
-["courage","Il a eu le courage de dire la vérité devant tout le monde.","courage / bravery / boldness"],
-["patience","La patience est une qualité essentielle dans ce métier.","patience / endurance"],
-["générosité","Sa générosité envers les autres est une source d'inspiration.","generosity / openhandedness"],
-["humilité","Son humilité malgré ses nombreux succès est remarquable.","humility / modesty"],
-["persévérance","Sa persévérance lui a permis d'atteindre ses objectifs.","perseverance / persistence"],
-["ambition","Son ambition est de créer une entreprise innovante.","ambition / drive / aspiration"],
-["curiosité","Sa curiosité intellectuelle l'a conduit vers la recherche.","curiosity / inquisitiveness"],
-["sincérité","Je l'apprécie pour sa sincérité dans toutes les situations.","sincerity / honesty / candor"],
-["franchise","Elle parle toujours avec franchise, même si c'est difficile.","frankness / honesty / exemption"],
-["intégrité","L'intégrité professionnelle est indispensable dans ce secteur.","integrity / honesty / wholeness"],
-["solidarité","La solidarité entre collègues renforce l'esprit d'équipe.","solidarity / support / mutual aid"],
-["tolérance","La tolérance est un fondement essentiel d'une société ouverte.","tolerance / open-mindedness"],
-["compassion","Elle traite ses patients avec beaucoup de compassion.","compassion / empathy / sympathy"],
-["empathie","L'empathie est une compétence clé pour les managers.","empathy / understanding"],
-["bienveillance","Un management bienveillant améliore les performances d'équipe.","benevolence / kindness / goodwill"],
-["résilience","Sa résilience face aux épreuves force l'admiration de tous.","resilience / toughness / bounce-back"]
-],
-"Défauts & vices":[
-["trahison","Cette trahison a profondément détruit leur amitié.","betrayal / treason / treachery"],
-["mensonge","Il a tout basé sur un mensonge qui a fini par éclater.","lie / untruth / deception"],
-["hypocrisie","L'hypocrisie de certains discours politiques choque les citoyens.","hypocrisy / double standards"],
-["lâcheté","Sa lâcheté face au problème a déçu toute l'équipe.","cowardice / spinelessness"],
-["paresse","La paresse est l'ennemi de la réussite selon ce proverbe.","laziness / sloth / idleness"],
-["cupidité","Sa cupidité l'a conduit à prendre des décisions malhonnêtes.","greed / avarice / greediness"],
-["égoïsme","Son égoïsme nuit à la cohésion de toute l'équipe.","selfishness / self-centeredness"],
-["arrogance","Son arrogance lors des réunions irrite ses collègues.","arrogance / haughtiness / conceit"],
-["imprudence","Son imprudence au volant a causé un accident grave.","recklessness / carelessness"],
-["négligence","La négligence dans ce dossier a eu des conséquences graves.","negligence / carelessness / oversight"],
-["intolérance","L'intolérance religieuse est une menace pour la paix sociale.","intolerance / bigotry"],
-["harcèlement","Le harcèlement au travail est interdit par la loi française.","harassment / bullying"],
-["manipulation","Ses techniques de manipulation sont difficiles à détecter.","manipulation / handling / control"],
-["injustice","Cette décision est une injustice criante envers les salariés.","injustice / unfairness"],
-["oppression","L'oppression des minorités est condamnée par la communauté internationale.","oppression / suppression"],
-["préjugé","Il faut lutter contre les préjugés pour construire une société juste.","prejudice / bias / preconception"],
-["discrimination","La discrimination à l'embauche est illégale en France.","discrimination / bias / unfair treatment"],
-["pauvreté","Des millions de personnes vivent encore dans une grande pauvreté.","poverty / destitution"],
-["chômage","Le taux de chômage est en légère baisse ce trimestre.","unemployment / joblessness"],
-["surmenage","Le surmenage professionnel est un problème de santé publique.","overwork / burnout / exhaustion"]
-],
-"Société & politique":[
-["crise","Cette crise économique affecte l'ensemble de la population.","crisis / shortage / fit"],
-["défi","Relever ce défi nécessite de la créativité et de la rigueur.","challenge / dare / defiance"],
-["enjeu","Les enjeux climatiques sont au cœur des politiques actuelles.","stake / issue / challenge"],
-["tendance","La tendance au télétravail s'est renforcée ces dernières années.","trend / tendency / inclination"],
-["évolution","L'évolution technologique transforme profondément notre société.","evolution / development / change"],
-["rupture","Cette décision marque une rupture avec la politique précédente.","break / rupture / split"],
-["transition","La transition énergétique est un défi majeur pour les entreprises.","transition / shift / changeover"],
-["réforme","La réforme du système éducatif fait débat dans tout le pays.","reform / overhaul"],
-["stratégie","Il faut définir une stratégie claire avant de lancer le projet.","strategy / plan / approach"],
-["initiative","Prendre des initiatives est valorisé dans cette entreprise.","initiative / step / drive"],
-["engagement","Son engagement en faveur de l'environnement est sincère.","commitment / involvement / pledge"],
-["impact","L'impact de cette décision sur les employés reste à évaluer.","impact / effect / influence"],
-["bénéfice","Les bénéfices de cet accord sont mutuels et durables.","benefit / profit / advantage"],
-["avantage","Parler plusieurs langues est un grand avantage professionnel.","advantage / benefit / edge"],
-["inconvénient","Le seul inconvénient de ce poste est la distance.","disadvantage / drawback / downside"],
-["opportunité","C'est une opportunité à saisir sans hésiter.","opportunity / chance / opening"],
-["ambiguïté","L'ambiguïté de ce contrat pourrait causer des conflits futurs.","ambiguity / vagueness / uncertainty"],
-["complexité","La complexité de ce dossier nécessite une expertise pointue.","complexity / intricacy"],
-["incertitude","L'incertitude économique freine les investissements des entreprises.","uncertainty / doubt / unpredictability"],
-["compromis","Trouver un compromis acceptable est la clé de cette négociation.","compromise / middle ground"]
-],
-"Justice & droit":[
-["victime","La victime a porté plainte auprès des autorités compétentes.","victim / casualty / sufferer"],
-["auteur","L'auteur du roman sera présent à la séance de dédicaces.","author / perpetrator / creator"],
-["complice","L'enquête a révélé qu'il avait un complice dans cette affaire.","accomplice / partner in crime"],
-["suspect","La police a interrogé plusieurs suspects dans cette affaire.","suspect / suspicious person"],
-["accusé","L'accusé a clamé son innocence tout au long du procès.","accused / defendant"],
-["condamné","Le condamné a fait appel de la décision du tribunal.","convicted / sentenced / condemned"],
-["prévenu","Le prévenu comparaît devant le tribunal correctionnel demain.","defendant / accused person"],
-["détenu","Le détenu bénéficie de mesures d'aménagement de peine.","prisoner / inmate / detainee"],
-["libéré","Il a été libéré après avoir purgé l'intégralité de sa peine.","freed / released / liberated"],
-["acquitté","Il a été acquitté faute de preuves suffisantes contre lui.","acquitted / cleared"],
-["amnistié","Ces prisonniers politiques ont été amnistiés après la révolution.","amnestied / pardoned"],
-["gracié","Le président a gracié le condamné pour raisons humanitaires.","pardoned / reprieved"],
-["réhabilité","Il a été réhabilité après que son innocence fut prouvée.","rehabilitated / restored / cleared"],
-["récidiviste","Le juge a été plus sévère avec ce récidiviste.","reoffender / repeat offender"],
-["repenti","Le gangster repenti a collaboré avec la justice.","repentant / penitent / informant"],
-["demandeur","Le demandeur d'asile a déposé son dossier en préfecture.","applicant / claimant / plaintiff"],
-["plaignant","Le plaignant a retiré sa plainte après un accord amiable.","complainant / plaintiff"],
-["gréviste","Les grévistes ont bloqué l'accès à l'usine ce matin.","striker / person on strike"],
-["manifestant","Des milliers de manifestants ont défilé dans les rues de Paris.","demonstrator / protester"],
-["dissident","Ce dissident politique a fui son pays pour demander l'asile.","dissident / rebel / nonconformist"]
-],
-"Militaire & conflit":[
-["soldat","Le soldat a accompli sa mission avec courage et discipline.","soldier / private / warrior"],
-["militaire","Une carrière militaire exige rigueur, discipline et engagement.","military / soldier / armed forces"],
-["officier","L'officier a donné ses instructions aux soldats avant l'opération.","officer / official"],
-["général","Le général a présenté sa stratégie devant l'état-major.","general / general (adj.) / overall"],
-["commandant","Le commandant a ordonné le repli stratégique de ses troupes.","commander / major / commanding officer"],
-["stratège","Ce stratège politique a su anticiper les mouvements de l'adversaire.","strategist / tactician"],
-["résistant","Son grand-père était résistant pendant la Seconde Guerre mondiale.","resistance fighter / resister"],
-["combattant","Les droits des anciens combattants sont protégés par la loi.","fighter / combatant / warrior"],
-["insurgé","Les insurgés ont pris le contrôle de plusieurs quartiers.","insurgent / rebel / rioter"],
-["révolutionnaire","Ce penseur révolutionnaire a remis en cause toutes les conventions.","revolutionary / radical / activist"],
-["rebelle","Cet adolescent rebelle a finalement trouvé sa voie dans l'art.","rebel / defiant / rebellious"],
-["mercenaire","Les mercenaires ont été engagés pour sécuriser cette région instable.","mercenary / hired soldier"],
-["gré","Il a accepté cette mission de bon gré sans se plaindre.","will / liking / preference"],
-["gênant","Cette situation est vraiment gênante pour tout le monde.","embarrassing / awkward / inconvenient"],
-["allure","Elle marche d'un pas sûr avec une allure très élégante.","speed / appearance / style / pace"],
-["pénible","Ce travail répétitif est vraiment pénible à la longue.","painful / tedious / annoying"],
-["lâches","Il est entouré de lâches qui refusent de dire la vérité.","cowardly / cowards / loosens"],
-["intime","Elle a organisé une cérémonie très intime avec ses proches.","intimate / close / private"],
-["trompée","Elle s'est sentie trahie et trompée par cette révélation.","deceived / cheated on / fooled"],
-["morgue","Il répond à toutes les critiques avec une morgue insupportable.","arrogance / pride / morgue (building)"]
-]
-};
+const ALL={"Verbes courants":[["ceinture","Elle a serré sa ceinture après avoir perdu du poids.","belt / waist","She tightened her belt after losing weight."],["digne","Il a répondu de manière digne malgré les insultes.","worthy / dignified","He replied in a dignified manner despite the insults."],["gâcher","Ne gâche pas cette opportunité, tu ne la retrouveras pas.","to waste / to ruin","Don't waste this opportunity — you won't get it back."],["prises","Les deux équipes sont aux prises depuis le début du match.","grip / outlets / taken","The two teams have been locked in struggle since the start of the match."],["congé","Elle a pris un congé maladie pour se remettre de l'opération.","leave / holiday","She took sick leave to recover from the operation."],["repartir","Après une courte pause, ils ont décidé de repartir.","to set off again","After a short break, they decided to set off again."],["pourri","Le bois était tellement pourri qu'il s'est effondré.","rotten / awful","The wood was so rotten that it collapsed."],["bétail","Le fermier surveille son bétail tous les matins.","livestock / cattle","The farmer checks on his livestock every morning."],["bonté","Sa bonté envers les étrangers est remarquable.","kindness / goodness","Her kindness towards strangers is remarkable."],["bouffer","On va bouffer une pizza ce soir, ça te va ?","to eat (fam.)","We're going to eat a pizza tonight — does that work for you?"],["guérir","Il a fallu trois semaines pour guérir de cette grippe.","to heal / to cure","It took three weeks to recover from that flu."],["coule","La rivière coule doucement entre les collines.","flows / sinks","The river flows gently between the hills."],["enlevez","Enlevez vos chaussures avant d'entrer, s'il vous plaît.","remove / take off","Please remove your shoes before entering."],["piqué","Il s'est fait piquer par une guêpe en jardinant.","stung / stolen / quirky","He got stung by a wasp while gardening."],["remise","La remise de 20% s'applique à tous les articles en solde.","discount / shed / delivery","The 20% discount applies to all sale items."],["sou","Je n'ai pas un sou en poche ce soir.","penny / cent (old)","I don't have a penny in my pocket tonight."],["abattre","La tempête a abattu plusieurs arbres dans le parc.","to knock down / to shoot","The storm knocked down several trees in the park."],["dégâts","Les dégâts causés par l'inondation sont considérables.","damage / harm","The damage caused by the flood is considerable."],["serré","Le programme de cette semaine est très serré.","tight / close / strong","This week's schedule is very tight."],["merveille","Ce château est une véritable merveille architecturale.","wonder / marvel","This castle is a true architectural marvel."],["fuite","La fuite d'eau a causé des dégâts au plafond.","leak / flight / escape","The water leak caused damage to the ceiling."],["humeur","Il est de mauvaise humeur ce matin, ne lui parle pas.","mood / humor","He's in a bad mood this morning — don't talk to him."],["rendre","Tu dois rendre ce livre à la bibliothèque avant vendredi.","to give back / to render","You need to return this book to the library before Friday."],["frapper","Elle a frappé à la porte mais personne n'a répondu.","to hit / to strike / to knock","She knocked on the door but no one answered."],["peine","Ce n'est pas la peine de te dépêcher, nous avons le temps.","pain / sorrow / penalty","There's no need to rush — we have time."],["fainéant","Ne sois pas aussi fainéant, tu as des devoirs à finir !","lazy / slacker","Don't be so lazy — you have homework to finish!"],["dépens","Il a appris à ses dépens qu'on ne peut pas toujours mentir.","expense / cost","He learnt the hard way that you can't always lie."],["quitter","Elle a décidé de quitter son emploi pour voyager.","to leave / to quit","She decided to quit her job to travel."],["bavard","Mon voisin est très bavard, il parle pendant des heures.","talkative / chatterbox","My neighbour is very talkative — he talks for hours."],["ennui","L'ennui du dimanche après-midi l'a poussé à lire.","boredom / trouble / worry","The boredom of Sunday afternoon pushed him to read."],["comble","C'est le comble ! Après tout ce travail, il refuse de payer.","peak / height / attic","That's the last straw! After all that work, he refuses to pay."],["vieux","Ce vieux quartier conserve tout son charme d'antan.","old / elderly / aged","This old neighbourhood has kept all its former charm."],["passer","Elle passe ses vacances à lire au bord de la mer.","to pass / to spend / to go by","She spends her holidays reading by the sea."],["feu","Les pompiers ont éteint le feu en moins d'une heure.","fire / traffic light / late","The firefighters put out the fire in under an hour."],["abord","De prime abord, cette tâche semble difficile mais elle ne l'est pas.","approach / manner / first","At first glance, this task seems difficult — but it isn't."],["entendu","C'est entendu, nous nous retrouvons demain à dix heures.","understood / heard / agreed","Agreed — we'll meet tomorrow at ten o'clock."],["malheur","À son grand malheur, il a raté son train de justesse.","misfortune / unhappiness","To his great misfortune, he just missed his train."],["propre","Garde ta chambre propre, s'il te plaît.","clean / own / proper","Please keep your room clean."],["traîner","Il ne faut pas traîner, la réunion commence dans dix minutes.","to drag / to hang around","We mustn't dawdle — the meeting starts in ten minutes."],["fond","Il nage jusqu'au fond de la piscine sans effort.","bottom / back / depth","He swims to the bottom of the pool effortlessly."],["coup","D'un seul coup, tout s'est mis à changer.","blow / hit / shot / move","All of a sudden, everything started to change."],["détour","Nous avons fait un détour par Lyon pour voir des amis.","detour / roundabout way","We made a detour via Lyon to see some friends."],["compte","Il faut tenir compte des avis de tous les membres.","account / count / importance","We must take everyone's opinion into account."],["souffrir","Elle souffre depuis plusieurs années de migraines chroniques.","to suffer / to endure","She has been suffering from chronic migraines for several years."],["tour","C'est ton tour de faire la vaisselle ce soir.","turn / tower / tour / trick","It's your turn to do the dishes tonight."],["sauter","Il a sauté par-dessus la barrière sans s'arrêter.","to jump / to skip / to blow up","He jumped over the fence without stopping."],["manque","Le manque de sommeil affecte la concentration.","lack / shortage / miss","Lack of sleep affects concentration."],["rater","J'ai raté mon bus et je suis arrivé en retard.","to miss / to fail / to mess up","I missed my bus and arrived late."],["bouger","Ne bougez pas, le médecin arrive dans un instant.","to move / to budge","Don't move — the doctor will be here in a moment."],["malin","Il est assez malin pour trouver une solution rapidement.","clever / sly / shrewd","He's clever enough to find a solution quickly."],["vif","Elle a un esprit vif et répond toujours rapidement.","lively / sharp / keen / vivid","She has a sharp mind and always responds quickly."],["manière","Il a réussi à convaincre tout le monde à sa manière.","manner / way / style","He managed to convince everyone in his own way."],["trou","Il y a un trou dans la chaussée depuis des semaines.","hole / gap / backwater","There has been a hole in the road for weeks."],["raconter","Elle lui a raconté toute l'histoire depuis le début.","to tell / to narrate","She told him the whole story from the beginning."],["embrouiller","Ses explications n'ont fait qu'embrouiller la situation.","to muddle / to confuse","His explanations only made the situation more confusing."],["plaisanter","Tu plaisantes j'espère, c'est impossible à faire en un jour !","to joke / to jest","I hope you're joking — it's impossible to do in a day!"],["laisser","Laisse-moi tranquille, j'essaie de me concentrer.","to leave / to let / to allow","Leave me alone — I'm trying to concentrate."],["garder","Il garde toujours son calme même dans les moments difficiles.","to keep / to guard / to look after","He always keeps his cool even in difficult moments."],["marcher","Est-ce que ta nouvelle voiture marche bien ?","to walk / to work / to go","Is your new car working well?"],["sortir","Elle sort avec ses amis tous les vendredis soir.","to go out / to take out","She goes out with her friends every Friday evening."]],"Argot & familier":[["crever","Le pneu de sa voiture a crevé sur l'autoroute.","to burst / to be exhausted (fam.)","His car tyre burst on the motorway."],["sécher","Elle sèche ses vêtements sur le balcon quand il fait beau.","to dry / to skip class (fam.)","She dries her clothes on the balcony when the weather is nice."],["claquer","Il a claqué la porte en partant, il était vraiment en colère.","to slam / to snap / to spend lavishly","He slammed the door on his way out — he was really angry."],["coller","Cette affiche ne colle pas bien sur ce mur humide.","to stick / to glue / to fit","This poster doesn't stick well on this damp wall."],["ficher","Fiche-moi la paix, je dois finir ce rapport pour demain.","to give / to put (fam.) / to file","Leave me alone — I have to finish this report by tomorrow."],["filer","Il a filé sans dire au revoir à personne.","to slip away / to give (fam.) / to spin","He slipped away without saying goodbye to anyone."],["boucler","Elle a bouclé son rapport en un temps record.","to buckle / to finish / to curl","She wrapped up her report in record time."],["planquer","Il a planqué les cadeaux pour que les enfants ne les trouvent pas.","to hide / to stash (fam.)","He hid the presents so the children wouldn't find them."],["geindre","Arrête de geindre et fais quelque chose pour résoudre le problème.","to whine / to moan / to groan","Stop whining and do something to solve the problem."],["flemme","J'ai la flemme de cuisiner ce soir, on commande ?","laziness / can't be bothered (fam.)","I can't be bothered to cook tonight — shall we order in?"],["galère","Trouver un appartement à Paris, c'est vraiment la galère.","struggle / hassle / hardship (fam.)","Finding a flat in Paris is a real nightmare."],["galérer","Il a galéré pendant des heures avant de trouver la solution.","to struggle / to have a hard time (fam.)","He struggled for hours before finding the solution."],["kiffer","Elle kiffe vraiment son nouveau travail, elle est épanouie.","to love / to be into (fam.)","She really loves her new job — she's thriving."],["pécho","Il a pécho un rhume en restant dehors sous la pluie.","to pick up / to catch (fam.)","He caught a cold from standing outside in the rain."],["larguer","Elle l'a largué après deux ans de relation.","to dump / to drop / to release","She dumped him after two years together."],["tronche","Tu fais une de ces tronches, qu'est-ce qui t'arrive ?","face / head (fam.)","What a face you're making — what's wrong?"],["pote","Il est sorti avec ses potes après le travail.","friend / buddy / pal (fam.)","He went out with his mates after work."],["taré","Ce type est complètement taré, il conduit à 200 km/h !","crazy / nuts / nutcase (fam.)","That guy is completely nuts — he's driving at 200 km/h!"],["zarbi","Cette situation est vraiment zarbi, je ne comprends pas.","weird / bizarre (verlan fam.)","This situation is really weird — I don't understand it."],["chelou","Il y a un truc chelou dans cette histoire, méfie-toi.","shady / weird / suspicious (verlan fam.)","There's something shady about this story — be careful."],["ouf","Ce concert était complètement ouf, une ambiance incroyable.","insane / crazy / great (verlan fam.)","That concert was absolutely insane — the atmosphere was incredible."],["relou","Ce collègue est vraiment relou avec ses remarques constantes.","annoying / a pain (verlan fam.)","That colleague is really annoying with his constant remarks."],["vachement","Ce film est vachement bien, tu devrais le voir.","really / very / awfully (fam.)","This film is really good — you should watch it."],["pété","Mon téléphone est complètement pété depuis que je l'ai fait tomber.","broken / wasted / crazy (fam.)","My phone has been completely broken since I dropped it."],["jules","Son jules l'a surprise avec un bouquet de fleurs ce matin.","boyfriend / bloke (fam.)","Her boyfriend surprised her with a bunch of flowers this morning."]],"Adverbes & connecteurs":[["carrément","Il a carrément refusé de participer à la réunion.","completely / totally / straight out","He flatly refused to take part in the meeting."],["franchement","Franchement, je ne pense pas que cette idée soit bonne.","frankly / honestly / really","Frankly, I don't think this idea is a good one."],["grave","C'est grave bien ce qu'il fait, je suis impressionné.","seriously / really (fam.) / serious","What he's doing is seriously good — I'm impressed."],["encore","Il pleut encore ce matin, la météo est vraiment maussade.","still / again / more / yet","It's raining again this morning — the weather is really gloomy."],["toujours","Elle est toujours prête à aider ses collègues.","always / still / ever","She is always ready to help her colleagues."],["jamais","Il ne l'a jamais rencontrée malgré leurs nombreux échanges.","never / ever","He has never met her despite their many exchanges."],["souvent","Elle va souvent au marché le samedi matin.","often / frequently","She often goes to the market on Saturday mornings."],["parfois","Il est parfois difficile de prendre les bonnes décisions.","sometimes / at times","It is sometimes difficult to make the right decisions."],["peut-être","Peut-être qu'il viendra, mais je n'en suis pas certain.","maybe / perhaps / possibly","Maybe he'll come, but I'm not sure."],["vraiment","Je suis vraiment désolé d'avoir oublié notre rendez-vous.","really / truly / genuinely","I am truly sorry for forgetting our appointment."],["surtout","Surtout, n'oublie pas de sauvegarder ton travail régulièrement.","above all / especially","Above all, don't forget to save your work regularly."],["plutôt","Je préférerais plutôt rester chez moi ce soir.","rather / quite / instead","I would rather stay at home tonight."],["quand même","Il a réussi quand même malgré toutes les difficultés.","still / all the same / even so","He succeeded all the same despite all the difficulties."],["d'ailleurs","D'ailleurs, j'allais justement t'appeler pour te parler de ça.","besides / moreover / incidentally","Besides, I was just about to call you to talk about that."],["pourtant","Il est parti tôt, pourtant il n'est pas encore arrivé.","yet / however / still","He left early, yet he still hasn't arrived."],["cependant","La tâche est complexe ; cependant, elle reste réalisable.","however / nevertheless / yet","The task is complex; however, it remains doable."],["néanmoins","Il a échoué ; néanmoins, il garde confiance en lui.","nevertheless / nonetheless","He failed; nevertheless, he keeps his confidence."],["toutefois","La situation est grave ; toutefois, des solutions existent.","however / nevertheless / that said","The situation is serious; that said, solutions exist."],["or","Or, il s'avère que cette hypothèse était fausse dès le départ.","now / but / yet (logical connector)","Now, it turns out this hypothesis was wrong from the start."],["donc","Il a travaillé dur ; donc, il mérite cette promotion.","so / therefore / thus","He worked hard; therefore, he deserves this promotion."],["ainsi","Il a changé ses habitudes et s'est ainsi amélioré.","thus / in this way / so","He changed his habits and thus improved himself."],["alors","Alors, qu'est-ce que tu as décidé finalement ?","then / so / at that time","So, what did you decide in the end?"],["ensuite","On mange d'abord, ensuite on discute de ce projet.","then / next / afterwards","We eat first, then we discuss this project."],["enfin","Il a enfin obtenu le poste qu'il souhaitait depuis longtemps.","finally / at last / well","He finally got the position he had wanted for a long time."],["d'abord","D'abord, vérifions que nous avons toutes les informations.","first / firstly / at first","First, let's make sure we have all the information."]],"Prépositions & petits mots":[["puis","Il a étudié, puis il a travaillé à l'étranger.","then / next / afterwards","He studied, then worked abroad."],["après","Après la réunion, nous irons déjeuner ensemble.","after / afterwards / later","After the meeting, we'll go for lunch together."],["avant","Réfléchis bien avant de prendre une décision définitive.","before / previously / in front","Think carefully before making a final decision."],["depuis","Elle habite dans cette ville depuis plus de dix ans.","since / for (time duration)","She has lived in this city for more than ten years."],["pendant","Pendant les travaux, il a habité chez ses parents.","during / for (duration) / while","During the renovations, he stayed at his parents'."],["jusqu'à","Il a travaillé jusqu'à minuit pour finir son rapport.","until / up to / as far as","He worked until midnight to finish his report."],["dès","Dès son arrivée, elle a commencé à travailler.","from / as soon as / starting from","As soon as she arrived, she started working."],["vers","Il rentrera vers dix-neuf heures ce soir.","towards / around / about (time)","He'll be back around seven o'clock this evening."],["entre","Entre les deux options, il a choisi la plus risquée.","between / among / within","Between the two options, he chose the riskier one."],["parmi","Elle se sentait bien parmi ses nouveaux collègues.","among / amongst / amid","She felt comfortable among her new colleagues."],["malgré","Malgré la pluie, ils ont maintenu la fête en plein air.","despite / in spite of","Despite the rain, they kept the outdoor party going."],["selon","Selon les experts, la situation devrait s'améliorer.","according to / depending on","According to experts, the situation should improve."],["grâce","Grâce à ton aide, j'ai pu finir à temps.","thanks to / grace / favour","Thanks to your help, I was able to finish on time."],["faute","Faute de temps, il n'a pas pu relire son travail.","fault / mistake / lack","For lack of time, he couldn't proofread his work."],["afin","Elle a étudié davantage afin de réussir son examen.","in order to / so that","She studied harder in order to pass her exam."],["voilà","Voilà le document que vous m'avez demandé hier.","here is / there is / that's it","Here is the document you asked me for yesterday."],["tiens","Tiens, je ne savais pas que tu connaissais cette personne !","here / hold / look / really (surprise)","Oh, I didn't know you knew that person!"],["bref","Bref, pour résumer, il faut changer notre approche.","in short / brief / anyway","In short, to sum up, we need to change our approach."],["quoi","Quoi qu'il arrive, nous ferons face ensemble.","what / which / huh","Whatever happens, we'll face it together."],["genre","Ce genre de situation est difficile à gérer seul.","kind / type / style / like (fam.)","This kind of situation is difficult to handle alone."],["machin","Passe-moi le machin là-bas, le truc pour ouvrir les boîtes.","thing / whatsit / thingamajig (fam.)","Pass me that thingamajig over there — the thing for opening boxes."],["truc","J'ai un truc à te dire, mais c'est entre nous.","thing / stuff / trick (fam.)","I have something to tell you, but it's between us."],["chose","Il y a une chose importante dont je dois te parler.","thing / matter / something","There is an important matter I need to talk to you about."],["façon","Il a une façon bien à lui d'expliquer les choses.","way / manner / fashion","He has his own particular way of explaining things."]],"Noms abstraits":[["bord","Elle s'est assise au bord de la fenêtre pour lire.","edge / side / board / shore","She sat by the window to read."],["bout","Au bout du couloir, vous trouverez la salle de conférence.","end / tip / piece / bit","At the end of the corridor, you'll find the conference room."],["côté","De quel côté du bâtiment est l'entrée principale ?","side / aspect / nearby","Which side of the building is the main entrance on?"],["endroit","C'est l'endroit idéal pour organiser une réunion d'équipe.","place / spot / right side","This is the ideal spot to organise a team meeting."],["lieu","La réunion aura lieu au siège de l'entreprise demain.","place / location / occasion","The meeting will take place at company headquarters tomorrow."],["moment","C'est le bon moment pour aborder ce sujet délicat.","moment / time / period","This is the right moment to raise this sensitive issue."],["fois","C'est la première fois qu'il visite cette région magnifique.","time / occasion / instance","This is the first time he has visited this magnificent region."],["sens","Dans quel sens faut-il tourner pour aller au centre ?","meaning / direction / sense","Which way do you turn to get to the centre?"],["suite","La suite de l'histoire sera révélée dans le prochain épisode.","continuation / sequence / following","The rest of the story will be revealed in the next episode."],["ensemble","Ils ont travaillé ensemble sur ce projet pendant six mois.","together / set / whole","They worked together on this project for six months."],["rapport","Quel est le rapport entre ces deux événements ?","report / relationship / ratio","What is the connection between these two events?"],["accord","Nous sommes d'accord sur les grandes lignes du projet.","agreement / chord / deal","We are in agreement on the broad outlines of the project."],["sujet","Quel est le sujet principal de ta thèse de doctorat ?","subject / topic / reason / person","What is the main subject of your doctoral thesis?"],["terme","À terme, ce projet devrait générer des bénéfices importants.","term / end / word / period","In the long run, this project should generate significant benefits."],["mesure","Il faut prendre des mesures urgentes pour résoudre ce problème.","measure / extent / step / degree","Urgent measures must be taken to solve this problem."],["force","La force de ce projet réside dans sa simplicité.","strength / force / power","The strength of this project lies in its simplicity."],["besoin","Elle a besoin de temps pour réfléchir à cette décision.","need / necessity","She needs time to reflect on this decision."],["envie","Il a envie de tout changer dans sa vie professionnelle.","desire / wish / craving","He wants to change everything in his professional life."],["occasion","C'est une occasion unique de rencontrer des experts du domaine.","opportunity / occasion / bargain","This is a unique opportunity to meet experts in the field."],["chance","Elle a eu la chance d'être sélectionnée parmi mille candidats.","luck / chance / opportunity","She was lucky enough to be selected from a thousand candidates."]],"Émotions & sentiments":[["joie","Sa joie était visible quand elle a appris la nouvelle.","joy / happiness / delight","Her joy was visible when she heard the news."],["chagrin","Elle a du chagrin depuis la disparition de son ami.","sorrow / grief / sadness","She has been grieving since her friend passed away."],["honte","Il a honte de n'avoir pas tenu sa promesse.","shame / embarrassment","He is ashamed of not having kept his promise."],["fierté","La fierté de ses parents était visible lors de la cérémonie.","pride / self-respect","His parents' pride was visible during the ceremony."],["regret","Il exprime ses regrets pour n'avoir pas agi plus tôt.","regret / sorrow / disappointment","He expresses his regret for not having acted sooner."],["espoir","Malgré les difficultés, elle n'a jamais perdu espoir.","hope / expectation","Despite the difficulties, she never lost hope."],["confiance","La confiance est indispensable dans une bonne relation de travail.","trust / confidence / faith","Trust is essential in a good working relationship."],["méfiance","Sa méfiance envers les inconnus est tout à fait compréhensible.","distrust / suspicion / wariness","His wariness towards strangers is entirely understandable."],["jalousie","La jalousie peut détruire même les meilleures amitiés.","jealousy / envy","Jealousy can destroy even the best friendships."],["tendresse","Elle manifeste beaucoup de tendresse envers ses proches.","tenderness / affection / fondness","She shows great tenderness towards those close to her."],["colère","Il a du mal à contrôler sa colère dans les situations stressantes.","anger / rage / fury","He struggles to control his anger in stressful situations."],["tristesse","Une profonde tristesse envahit la salle lors de l'annonce.","sadness / sorrow / gloom","A deep sadness filled the room when the announcement was made."],["angoisse","L'angoisse avant les examens est un sentiment très répandu.","anxiety / anguish / dread","Anxiety before exams is a very common feeling."],["soulagement","Quel soulagement de savoir que tout va bien finalement !","relief / alleviation","What a relief to know that everything is fine at last!"],["surprise","À notre grande surprise, il a accepté toutes nos conditions.","surprise / shock / amazement","To our great surprise, he accepted all our conditions."],["déception","Sa déception était grande après tant d'efforts fournis.","disappointment / letdown","His disappointment was great after so much effort."],["admiration","Elle regarde ce peintre avec beaucoup d'admiration.","admiration / wonder / respect","She looks at this painter with great admiration."],["mépris","Il traite ses subordonnés avec un mépris injustifiable.","contempt / scorn / disdain","He treats his subordinates with unjustifiable contempt."],["pitié","Elle a aidé cet homme par pitié, non par obligation.","pity / compassion / mercy","She helped that man out of pity, not obligation."],["orgueil","Son orgueil démesuré lui coûte souvent des amis.","pride / arrogance / vanity","His excessive pride often costs him friendships."]],"Qualités & vertus":[["pudeur","Elle parle de ses émotions avec une pudeur touchante.","modesty / decency / reserve","She speaks about her emotions with a touching modesty."],["lucidité","Sa lucidité face à la crise a été saluée par tous.","lucidity / clear-headedness","His clear-headedness in the face of the crisis was praised by all."],["loyauté","Sa loyauté envers l'entreprise n'a jamais été mise en doute.","loyalty / faithfulness / allegiance","Her loyalty to the company has never been called into question."],["sagesse","La sagesse s'acquiert souvent avec l'expérience et le temps.","wisdom / prudence / sense","Wisdom is often acquired through experience and time."],["courage","Il a eu le courage de dire la vérité devant tout le monde.","courage / bravery / boldness","He had the courage to tell the truth in front of everyone."],["patience","La patience est une qualité essentielle dans ce métier.","patience / endurance","Patience is an essential quality in this profession."],["générosité","Sa générosité envers les autres est une source d'inspiration.","generosity / openhandedness","Her generosity towards others is a source of inspiration."],["humilité","Son humilité malgré ses nombreux succès est remarquable.","humility / modesty","His humility despite his many successes is remarkable."],["persévérance","Sa persévérance lui a permis d'atteindre ses objectifs.","perseverance / persistence","Her perseverance allowed her to reach her goals."],["ambition","Son ambition est de créer une entreprise innovante.","ambition / drive / aspiration","His ambition is to create an innovative company."],["curiosité","Sa curiosité intellectuelle l'a conduit vers la recherche.","curiosity / inquisitiveness","His intellectual curiosity led him towards research."],["sincérité","Je l'apprécie pour sa sincérité dans toutes les situations.","sincerity / honesty / candor","I appreciate her for her sincerity in all situations."],["franchise","Elle parle toujours avec franchise, même si c'est difficile.","frankness / honesty / exemption","She always speaks with frankness, even when it's difficult."],["intégrité","L'intégrité professionnelle est indispensable dans ce secteur.","integrity / honesty / wholeness","Professional integrity is indispensable in this sector."],["solidarité","La solidarité entre collègues renforce l'esprit d'équipe.","solidarity / support / mutual aid","Solidarity among colleagues strengthens team spirit."],["tolérance","La tolérance est un fondement essentiel d'une société ouverte.","tolerance / open-mindedness","Tolerance is an essential foundation of an open society."],["compassion","Elle traite ses patients avec beaucoup de compassion.","compassion / empathy / sympathy","She treats her patients with great compassion."],["empathie","L'empathie est une compétence clé pour les managers.","empathy / understanding","Empathy is a key skill for managers."],["bienveillance","Un management bienveillant améliore les performances d'équipe.","benevolence / kindness / goodwill","Benevolent management improves team performance."],["résilience","Sa résilience face aux épreuves force l'admiration de tous.","resilience / toughness / bounce-back","Her resilience in the face of hardship commands everyone's admiration."]],"Défauts & vices":[["trahison","Cette trahison a profondément détruit leur amitié.","betrayal / treason / treachery","This betrayal deeply destroyed their friendship."],["mensonge","Il a tout basé sur un mensonge qui a fini par éclater.","lie / untruth / deception","He built everything on a lie that eventually came to light."],["hypocrisie","L'hypocrisie de certains discours politiques choque les citoyens.","hypocrisy / double standards","The hypocrisy of certain political speeches shocks citizens."],["lâcheté","Sa lâcheté face au problème a déçu toute l'équipe.","cowardice / spinelessness","His cowardice in the face of the problem disappointed the whole team."],["paresse","La paresse est l'ennemi de la réussite selon ce proverbe.","laziness / sloth / idleness","Laziness is the enemy of success, according to this proverb."],["cupidité","Sa cupidité l'a conduit à prendre des décisions malhonnêtes.","greed / avarice / greediness","His greed led him to make dishonest decisions."],["égoïsme","Son égoïsme nuit à la cohésion de toute l'équipe.","selfishness / self-centeredness","His selfishness harms the cohesion of the whole team."],["arrogance","Son arrogance lors des réunions irrite ses collègues.","arrogance / haughtiness / conceit","His arrogance during meetings irritates his colleagues."],["imprudence","Son imprudence au volant a causé un accident grave.","recklessness / carelessness","His recklessness at the wheel caused a serious accident."],["négligence","La négligence dans ce dossier a eu des conséquences graves.","negligence / carelessness / oversight","Negligence in handling this case had serious consequences."],["intolérance","L'intolérance religieuse est une menace pour la paix sociale.","intolerance / bigotry","Religious intolerance is a threat to social peace."],["harcèlement","Le harcèlement au travail est interdit par la loi française.","harassment / bullying","Harassment in the workplace is prohibited by French law."],["manipulation","Ses techniques de manipulation sont difficiles à détecter.","manipulation / handling / control","His manipulation techniques are difficult to detect."],["injustice","Cette décision est une injustice criante envers les salariés.","injustice / unfairness","This decision is a glaring injustice towards employees."],["oppression","L'oppression des minorités est condamnée par la communauté internationale.","oppression / suppression","The oppression of minorities is condemned by the international community."],["préjugé","Il faut lutter contre les préjugés pour construire une société juste.","prejudice / bias / preconception","We must fight against prejudice to build a just society."],["discrimination","La discrimination à l'embauche est illégale en France.","discrimination / bias / unfair treatment","Discrimination in hiring is illegal in France."],["pauvreté","Des millions de personnes vivent encore dans une grande pauvreté.","poverty / destitution","Millions of people still live in great poverty."],["chômage","Le taux de chômage est en légère baisse ce trimestre.","unemployment / joblessness","The unemployment rate is slightly down this quarter."],["surmenage","Le surmenage professionnel est un problème de santé publique.","overwork / burnout / exhaustion","Professional burnout is a public health problem."]],"Société & politique":[["crise","Cette crise économique affecte l'ensemble de la population.","crisis / shortage / fit","This economic crisis affects the entire population."],["défi","Relever ce défi nécessite de la créativité et de la rigueur.","challenge / dare / defiance","Meeting this challenge requires creativity and rigour."],["enjeu","Les enjeux climatiques sont au cœur des politiques actuelles.","stake / issue / challenge","Climate issues are at the heart of current policies."],["tendance","La tendance au télétravail s'est renforcée ces dernières années.","trend / tendency / inclination","The trend towards remote working has strengthened in recent years."],["évolution","L'évolution technologique transforme profondément notre société.","evolution / development / change","Technological evolution is profoundly transforming our society."],["rupture","Cette décision marque une rupture avec la politique précédente.","break / rupture / split","This decision marks a break with previous policy."],["transition","La transition énergétique est un défi majeur pour les entreprises.","transition / shift / changeover","The energy transition is a major challenge for businesses."],["réforme","La réforme du système éducatif fait débat dans tout le pays.","reform / overhaul","The reform of the education system is being debated across the country."],["stratégie","Il faut définir une stratégie claire avant de lancer le projet.","strategy / plan / approach","A clear strategy must be defined before launching the project."],["initiative","Prendre des initiatives est valorisé dans cette entreprise.","initiative / step / drive","Taking initiative is valued in this company."],["engagement","Son engagement en faveur de l'environnement est sincère.","commitment / involvement / pledge","His commitment to the environment is sincere."],["impact","L'impact de cette décision sur les employés reste à évaluer.","impact / effect / influence","The impact of this decision on employees remains to be assessed."],["bénéfice","Les bénéfices de cet accord sont mutuels et durables.","benefit / profit / advantage","The benefits of this agreement are mutual and lasting."],["avantage","Parler plusieurs langues est un grand avantage professionnel.","advantage / benefit / edge","Speaking several languages is a great professional advantage."],["inconvénient","Le seul inconvénient de ce poste est la distance.","disadvantage / drawback / downside","The only drawback of this position is the distance."],["opportunité","C'est une opportunité à saisir sans hésiter.","opportunity / chance / opening","This is an opportunity to seize without hesitation."],["ambiguïté","L'ambiguïté de ce contrat pourrait causer des conflits futurs.","ambiguity / vagueness / uncertainty","The ambiguity of this contract could cause future conflicts."],["complexité","La complexité de ce dossier nécessite une expertise pointue.","complexity / intricacy","The complexity of this case requires specialist expertise."],["incertitude","L'incertitude économique freine les investissements des entreprises.","uncertainty / doubt / unpredictability","Economic uncertainty is holding back business investment."],["compromis","Trouver un compromis acceptable est la clé de cette négociation.","compromise / middle ground","Finding an acceptable compromise is the key to this negotiation."]],"Justice & droit":[["victime","La victime a porté plainte auprès des autorités compétentes.","victim / casualty / sufferer","The victim filed a complaint with the relevant authorities."],["auteur","L'auteur du roman sera présent à la séance de dédicaces.","author / perpetrator / creator","The author of the novel will be present at the signing session."],["complice","L'enquête a révélé qu'il avait un complice dans cette affaire.","accomplice / partner in crime","The investigation revealed he had an accomplice in this case."],["suspect","La police a interrogé plusieurs suspects dans cette affaire.","suspect / suspicious person","The police questioned several suspects in this case."],["accusé","L'accusé a clamé son innocence tout au long du procès.","accused / defendant","The defendant proclaimed his innocence throughout the trial."],["condamné","Le condamné a fait appel de la décision du tribunal.","convicted / sentenced / condemned","The convicted person appealed against the court's decision."],["prévenu","Le prévenu comparaît devant le tribunal correctionnel demain.","defendant / accused person","The defendant appears before the criminal court tomorrow."],["détenu","Le détenu bénéficie de mesures d'aménagement de peine.","prisoner / inmate / detainee","The prisoner benefits from sentence adjustment measures."],["libéré","Il a été libéré après avoir purgé l'intégralité de sa peine.","freed / released / liberated","He was released after serving his full sentence."],["acquitté","Il a été acquitté faute de preuves suffisantes contre lui.","acquitted / cleared","He was acquitted due to insufficient evidence against him."],["amnistié","Ces prisonniers politiques ont été amnistiés après la révolution.","amnestied / pardoned","These political prisoners were amnestied after the revolution."],["gracié","Le président a gracié le condamné pour raisons humanitaires.","pardoned / reprieved","The president pardoned the convicted person for humanitarian reasons."],["réhabilité","Il a été réhabilité après que son innocence fut prouvée.","rehabilitated / restored / cleared","He was rehabilitated after his innocence was proven."],["récidiviste","Le juge a été plus sévère avec ce récidiviste.","reoffender / repeat offender","The judge was stricter with this repeat offender."],["repenti","Le gangster repenti a collaboré avec la justice.","repentant / penitent / informant","The repentant gangster cooperated with the justice system."],["demandeur","Le demandeur d'asile a déposé son dossier en préfecture.","applicant / claimant / plaintiff","The asylum seeker submitted his application at the prefecture."],["plaignant","Le plaignant a retiré sa plainte après un accord amiable.","complainant / plaintiff","The complainant withdrew his complaint after an amicable settlement."],["gréviste","Les grévistes ont bloqué l'accès à l'usine ce matin.","striker / person on strike","The strikers blocked access to the factory this morning."],["manifestant","Des milliers de manifestants ont défilé dans les rues de Paris.","demonstrator / protester","Thousands of demonstrators marched through the streets of Paris."],["dissident","Ce dissident politique a fui son pays pour demander l'asile.","dissident / rebel / nonconformist","This political dissident fled his country to seek asylum."]],"Militaire & conflit":[["soldat","Le soldat a accompli sa mission avec courage et discipline.","soldier / private / warrior","The soldier completed his mission with courage and discipline."],["militaire","Une carrière militaire exige rigueur, discipline et engagement.","military / soldier / armed forces","A military career demands rigour, discipline and commitment."],["officier","L'officier a donné ses instructions aux soldats avant l'opération.","officer / official","The officer gave his instructions to the soldiers before the operation."],["général","Le général a présenté sa stratégie devant l'état-major.","general / general (adj.) / overall","The general presented his strategy to the high command."],["commandant","Le commandant a ordonné le repli stratégique de ses troupes.","commander / major / commanding officer","The commander ordered a strategic withdrawal of his troops."],["stratège","Ce stratège politique a su anticiper les mouvements de l'adversaire.","strategist / tactician","This political strategist was able to anticipate the opponent's moves."],["résistant","Son grand-père était résistant pendant la Seconde Guerre mondiale.","resistance fighter / resister","His grandfather was a resistance fighter during the Second World War."],["combattant","Les droits des anciens combattants sont protégés par la loi.","fighter / combatant / warrior","The rights of veterans are protected by law."],["insurgé","Les insurgés ont pris le contrôle de plusieurs quartiers.","insurgent / rebel / rioter","The insurgents took control of several neighbourhoods."],["révolutionnaire","Ce penseur révolutionnaire a remis en cause toutes les conventions.","revolutionary / radical / activist","This revolutionary thinker called all conventions into question."],["rebelle","Cet adolescent rebelle a finalement trouvé sa voie dans l'art.","rebel / defiant / rebellious","This rebellious teenager finally found his path in art."],["mercenaire","Les mercenaires ont été engagés pour sécuriser cette région instable.","mercenary / hired soldier","Mercenaries were hired to secure this unstable region."],["gré","Il a accepté cette mission de bon gré sans se plaindre.","will / liking / preference","He willingly accepted this mission without complaining."],["gênant","Cette situation est vraiment gênante pour tout le monde.","embarrassing / awkward / inconvenient","This situation is really embarrassing for everyone."],["allure","Elle marche d'un pas sûr avec une allure très élégante.","speed / appearance / style / pace","She walks with a steady step and a very elegant bearing."],["pénible","Ce travail répétitif est vraiment pénible à la longue.","painful / tedious / annoying","This repetitive work is really tedious in the long run."],["lâches","Il est entouré de lâches qui refusent de dire la vérité.","cowardly / cowards / loosens","He is surrounded by cowards who refuse to tell the truth."],["intime","Elle a organisé une cérémonie très intime avec ses proches.","intimate / close / private","She organised a very intimate ceremony with her close ones."],["trompée","Elle s'est sentie trahie et trompée par cette révélation.","deceived / cheated on / fooled","She felt betrayed and deceived by this revelation."],["morgue","Il répond à toutes les critiques avec une morgue insupportable.","arrogance / pride / morgue (building)","He responds to all criticism with insufferable arrogance."]]};
 
-const DECK_ALL = "Tous les mots (469)";
-let decks = {[DECK_ALL]: Object.values(ALL).flat()};
-Object.entries(ALL).forEach(([k,v]) => decks[k] = v);
+const DECK_ALL="Tous les mots (314)";
+let decks={[DECK_ALL]:Object.values(ALL).flat()};
+Object.entries(ALL).forEach(([k,v])=>decks[k]=v);
+let current=DECK_ALL,cards=[],idx=0,flipped=false;
+let frVoice=null,playing=false,playTimer=null;
+const PLAY_DELAY=2400;
 
-let current = DECK_ALL, cards = [], idx = 0, flipped = false;
-let playing = false, playTimer = null;
-const PLAY_DELAY = 2400;
+function loadVoices(){
+  const v=window.speechSynthesis.getVoices();
+  frVoice=v.find(x=>x.lang==='fr-FR')||v.find(x=>x.lang.startsWith('fr'))||null;
+}
+if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=loadVoices;loadVoices();}
 
-function highlightWord(sentence, word) {
-  const clean = word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-  return sentence.replace(new RegExp('\\b' + clean + '\\b','gi'), m => '<em>' + m + '</em>');
+function highlight(s,w){
+  const e=w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  try{return s.replace(new RegExp('(?<![\\w])'+e+'(?![\\w])','gi'),m=>'<em>'+m+'</em>');}
+  catch(ex){return s.replace(new RegExp(e,'gi'),m=>'<em>'+m+'</em>');}
 }
 
-function init() {
-  const sel = document.getElementById('deckSel');
-  sel.innerHTML = Object.keys(decks).map(k =>
-    `<option value="${k}">${k}${k===DECK_ALL?'':' ('+decks[k].length+')'}</option>`
-  ).join('');
+function speakText(t,cb){
+  if(!window.speechSynthesis){cb&&cb();return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang='fr-FR';u.rate=0.85;u.pitch=1.0;
+  if(frVoice)u.voice=frVoice;
+  u.onend=()=>{cb&&cb();};u.onerror=()=>{cb&&cb();};
+  window.speechSynthesis.speak(u);
+}
+
+function speakCurrent(e){
+  e&&e.stopPropagation();
+  if(!cards[idx])return;
+  const btn=document.getElementById('speakBtn'),lbl=document.getElementById('speakLabel');
+  btn.classList.add('speaking');lbl.textContent='En cours…';
+  speakText(cards[idx][0],()=>{btn.classList.remove('speaking');lbl.textContent='Prononcer';});
+}
+
+function init(){
+  const sel=document.getElementById('deckSel');
+  sel.innerHTML=Object.keys(decks).map(k=>`<option value="${k}">${k}${k===DECK_ALL?'':' ('+decks[k].length+')'}</option>`).join('');
   restart();
 }
 
-function switchDeck() { current = document.getElementById('deckSel').value; stopPlay(); restart(); }
-
-function shuffle() {
-  cards = [...(decks[current]||[])];
+function switchDeck(){current=document.getElementById('deckSel').value;stopPlay();restart();}
+function shuffle(){
+  cards=[...(decks[current]||[])];
   for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}
-  idx=0; stopPlay(); showCard();
+  idx=0;stopPlay();showCard();
+}
+function restart(){cards=[...(decks[current]||[])];idx=0;stopPlay();showCard();}
+
+function showCard(){
+  if(!cards.length)return;
+  flipped=false;
+  window.speechSynthesis&&window.speechSynthesis.cancel();
+  const c=cards[idx];
+  document.getElementById('card').className='card';
+  document.getElementById('sideTag').textContent='Français · Recto';
+  document.getElementById('frontView').style.display='';
+  document.getElementById('backView').style.display='none';
+  document.getElementById('fWord').textContent=c[0];
+  document.getElementById('fExample').innerHTML=highlight(c[1],c[0]);
+  document.getElementById('speakLabel').textContent='Prononcer';
+  document.getElementById('speakBtn').classList.remove('speaking');
+  document.getElementById('counter').textContent=(idx+1)+' / '+cards.length;
+  document.getElementById('prog').style.width=Math.round((idx/(cards.length-1||1))*100)+'%';
 }
 
-function restart() {
-  cards = [...(decks[current]||[])]; idx=0; stopPlay(); showCard();
-}
-
-function showCard() {
-  if(!cards.length) return;
-  flipped = false;
-  const c = cards[idx];
-  document.getElementById('card').className = 'card';
-  document.getElementById('sideTag').textContent = 'Français · Recto';
-  document.getElementById('frontView').style.display = '';
-  document.getElementById('backView').style.display = 'none';
-  document.getElementById('fWord').textContent = c[0];
-  document.getElementById('fExample').innerHTML = highlightWord(c[1], c[0]);
-  document.getElementById('counter').textContent = (idx+1) + ' / ' + cards.length;
-  document.getElementById('prog').style.width = Math.round((idx/(cards.length-1||1))*100) + '%';
-}
-
-function flip() {
-  if(!cards[idx]) return;
-  if(!flipped) {
-    flipped = true;
-    const c = cards[idx];
-    document.getElementById('card').className = 'card back';
-    document.getElementById('sideTag').textContent = 'English · Verso';
-    document.getElementById('frontView').style.display = 'none';
-    document.getElementById('backView').style.display = '';
-    document.getElementById('bEn').textContent = c[2];
+function flip(){
+  if(!cards[idx])return;
+  if(!flipped){
+    flipped=true;
+    window.speechSynthesis&&window.speechSynthesis.cancel();
+    const c=cards[idx];
+    document.getElementById('card').className='card back';
+    document.getElementById('sideTag').textContent='English · Verso';
+    document.getElementById('frontView').style.display='none';
+    document.getElementById('backView').style.display='';
+    document.getElementById('bEnWord').textContent=c[2];
+    document.getElementById('bEnSentence').textContent=c[3];
   } else { showCard(); }
 }
 
-function prevCard() { stopPlay(); if(idx>0){idx--;showCard();} }
-function nextCard() { stopPlay(); if(idx<cards.length-1){idx++;showCard();} }
+function prevCard(){stopPlay();if(idx>0){idx--;showCard();}}
+function nextCard(){stopPlay();if(idx<cards.length-1){idx++;showCard();}}
+function togglePlay(){if(playing){stopPlay();}else{startPlay();}}
 
-function togglePlay() { if(playing){stopPlay();}else{startPlay();} }
-
-function startPlay() {
-  playing = true;
-  document.getElementById('playBtn').textContent = '■ Stop';
+function startPlay(){
+  playing=true;
+  document.getElementById('playBtn').textContent='■ Stop';
   document.getElementById('playBtn').classList.add('active');
   playStep();
 }
-
-function playStep() {
-  if(!playing) return;
+function playStep(){
+  if(!playing)return;
   showCard();
-  document.getElementById('playInfo').textContent = (idx+1) + ' / ' + cards.length + ' — ' + cards[idx][0];
-  playTimer = setTimeout(() => {
-    if(!playing) return;
-    if(idx < cards.length-1) { idx++; playStep(); }
-    else { stopPlay(); document.getElementById('playInfo').textContent = 'Terminé — ' + cards.length + ' mots parcourus.'; }
-  }, PLAY_DELAY);
+  document.getElementById('playInfo').textContent=(idx+1)+' / '+cards.length+' — '+cards[idx][0];
+  speakText(cards[idx][0],()=>{
+    if(!playing)return;
+    playTimer=setTimeout(()=>{
+      if(!playing)return;
+      if(idx<cards.length-1){idx++;playStep();}
+      else{stopPlay();document.getElementById('playInfo').textContent='Terminé — '+cards.length+' mots parcourus.';}
+    },PLAY_DELAY);
+  });
 }
-
-function stopPlay() {
-  playing = false; clearTimeout(playTimer);
-  document.getElementById('playBtn').textContent = '▶ Tout jouer';
+function stopPlay(){
+  playing=false;clearTimeout(playTimer);
+  window.speechSynthesis&&window.speechSynthesis.cancel();
+  document.getElementById('playBtn').textContent='▶ Tout jouer';
   document.getElementById('playBtn').classList.remove('active');
-  document.getElementById('playInfo').textContent = '';
+  document.getElementById('playInfo').textContent='';
 }
-
 init();
 </script>
