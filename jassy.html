@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andy Jassy 2025 Letter to Shareholders — Parallel Text EN/FR</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --amazon-orange: #FF9900;
+    --ink: #1a1a18;
+    --muted: #5c5c52;
+    --rule: #d4d0c8;
+    --bg: #faf9f6;
+    --card: #ffffff;
+    --col-en: #1a3a5c;
+    --col-fr: #5c1a1a;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  header {
+    background: var(--ink);
+    padding: 48px 40px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--amazon-orange);
+  }
+  .header-label {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amazon-orange);
+    margin-bottom: 14px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(22px, 4vw, 36px);
+    color: #fff;
+    line-height: 1.2;
+    max-width: 700px;
+    margin: 0 auto 10px;
+  }
+  header .subtitle {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 300;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.08em;
+  }
+
+  .lang-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: var(--ink);
+    padding-bottom: 20px;
+  }
+  .lang-badge {
+    font-family: 'Source Serif 4', serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .lang-badge.en { color: #8ab4d4; border-right: none; }
+  .lang-badge.fr { color: #d4a08a; border-left: none; }
+
+  main { max-width: 1280px; margin: 0 auto; padding: 0 24px 80px; }
+
+  .section {
+    margin-top: 48px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--amazon-orange);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-header .sh-en,
+  .section-header .sh-fr {
+    padding: 14px 24px;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 400;
+  }
+  .section-header .sh-en { color: var(--col-en); border-right: 1px solid var(--rule); }
+  .section-header .sh-fr { color: var(--col-fr); }
+
+  .section-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .col-en, .col-fr {
+    padding: 24px 28px;
+  }
+  .col-en { border-right: 1px solid var(--rule); }
+
+  .col-en p, .col-fr p {
+    margin-bottom: 1.2em;
+    font-size: 14.5px;
+    line-height: 1.85;
+  }
+  .col-en p:last-child, .col-fr p:last-child { margin-bottom: 0; }
+
+  .col-en p { color: #1a1a18; }
+  .col-fr p { color: #1a1a18; }
+
+  .col-en .lang-tag, .col-fr .lang-tag {
+    display: inline-block;
+    font-family: 'Source Serif 4', serif;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-bottom: 14px;
+  }
+  .col-en .lang-tag { background: #e8f0f8; color: var(--col-en); }
+  .col-fr .lang-tag { background: #f8ece8; color: var(--col-fr); }
+
+  .numbers-block {
+    margin: 32px 24px;
+    padding: 20px 24px;
+    background: #f7f5f0;
+    border-left: 3px solid var(--amazon-orange);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .numbers-block .num-en, .numbers-block .num-fr { font-size: 13.5px; line-height: 1.75; }
+  .numbers-block .num-label {
+    font-family: 'Source Serif 4', serif;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .salutation {
+    grid-template-columns: 1fr 1fr;
+    padding: 28px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .closing {
+    padding: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    border-top: 1px solid var(--rule);
+    margin-top: 0;
+  }
+  .closing .sig { font-family: 'Playfair Display', serif; font-style: italic; font-size: 15px; }
+  .closing .sig-name { font-weight: 600; display: block; margin-top: 16px; font-style: normal; font-size: 14px; }
+  .closing .sig-title { font-weight: 300; font-size: 12px; color: var(--muted); letter-spacing: 0.05em; display: block; }
+
+  @media (max-width: 700px) {
+    .section-body, .section-header, .numbers-block, .closing { grid-template-columns: 1fr; }
+    .col-en { border-right: none; border-bottom: 1px solid var(--rule); }
+    .section-header .sh-en { border-right: none; border-bottom: 1px solid var(--rule); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Texte parallèle · Parallel text</div>
+  <h1>CEO Andy Jassy's 2025 Letter to Shareholders</h1>
+  <div class="subtitle">Amazon.com, Inc. · April 9, 2026 · English / Français</div>
+</header>
+<div class="lang-bar">
+  <span class="lang-badge en">EN · English</span>
+  <span class="lang-badge fr">FR · Français</span>
+</div>
+
+<main>
+
+<!-- OPENING -->
+<div class="section">
+  <div class="section-header">
+    <div class="sh-en">Opening</div>
+    <div class="sh-fr">Ouverture</div>
+  </div>
+  <div class="section-body">
+    <div class="col-en">
+      <span class="lang-tag">English</span>
+      <p>Dear Shareholders:</p>
+      <p>When I graduated from college, I wanted to be a sportscaster. After sending my resume reel to many small markets around the U.S., and only getting two nibbles, I settled on doing sports production at a major network. To make extra money, I also coached my former high school soccer team, and worked at a retail golf store. Six months later, a college classmate convinced me to interview at the consumer products company where he worked, and I spent three years as a Product Manager there. I left that job to try some of my own businesses. After deciding these businesses weren't my calling, I tried short stints in sales and investment banking, before going back to graduate school and ending up at Amazon three days after my last final exam in May 1997.</p>
+      <p>Not exactly a straight line.</p>
+      <p>AWS followed lots of squiggly lines, too. The original vision included storage, compute, payments, and human intelligence. Some of those became lynchpins in AWS. Others didn't succeed. We didn't initially plan a database service; and when we built one, our first attempt failed to get traction. We went back to the drawing board and built new relational and non-relational database services, which have resonated well and become core to millions of AWS applications.</p>
+      <p>AWS has worked out well for Amazon, but a straight line? Not really.</p>
+      <p>There's a band I like from New Zealand called "The Beths," whose latest album "Straight Line Was a Lie" made me think about how prescient that expression is. Most long-term endeavors do not follow a linear path. Progress jumps around; it'll zig up, then sometimes stall, or zag down, or force you back to the starting line. But, the path is rarely straight.</p>
+      <p>That's because the world is complex, and new technology, business model invention, competitors, global issues, or people and cultural shifts can come into play. We're in the middle of some of the biggest inflections of our lifetime (e.g. AI, robotics, space industrialization, geopolitical and military conflict). I'll share some of our lessons below and why we're bullish on what's ahead for Amazon.</p>
+    </div>
+    <div class="col-fr">
+      <span class="lang-tag">Français</span>
+      <p>Chers actionnaires,</p>
+      <p>Lorsque j'ai obtenu mon diplôme universitaire, je voulais devenir commentateur sportif. Après avoir envoyé ma démo à de nombreux marchés locaux à travers les États-Unis et n'avoir reçu que deux réponses, j'ai finalement opté pour la production sportive dans un grand réseau télévisé. Pour arrondir mes fins de mois, j'entraînais aussi l'équipe de football de mon ancien lycée et travaillais dans un magasin de golf. Six mois plus tard, un camarade de promotion m'a convaincu de passer un entretien dans la société de biens de consommation où il travaillait, et j'y ai passé trois ans en tant que chef de produit. J'ai quitté ce poste pour tenter ma chance dans mes propres entreprises. Ayant conclu que ce n'était pas ma vocation, j'ai occupé de courtes fonctions dans la vente et la banque d'investissement, avant de retourner aux études et de rejoindre Amazon trois jours après mon dernier examen de master en mai 1997.</p>
+      <p>Pas vraiment une ligne droite.</p>
+      <p>AWS a lui aussi suivi de nombreuses lignes tortueuses. La vision initiale incluait le stockage, le calcul, les paiements et l'intelligence humaine. Certains de ces éléments sont devenus des piliers d'AWS. D'autres n'ont pas abouti. Nous ne prévoyions pas initialement de service de base de données ; et lorsque nous en avons construit un, notre première tentative n'a pas rencontré le succès. Nous sommes retournés à la planche à dessin et avons développé de nouveaux services de bases de données relationnelles et non relationnelles, qui ont bien trouvé leur public et sont devenus fondamentaux pour des millions d'applications AWS.</p>
+      <p>AWS s'est bien développé pour Amazon, mais en ligne droite ? Pas vraiment.</p>
+      <p>Il y a un groupe néo-zélandais que j'apprécie, appelé « The Beths », dont le dernier album « Straight Line Was a Lie » (La ligne droite était un mensonge) m'a fait réfléchir à la justesse de cette expression. La plupart des projets à long terme ne suivent pas un chemin linéaire. La progression s'emballe ; elle monte en zigzag, puis parfois stagne, ou redescend, ou vous force à reprendre depuis le début. Mais le chemin est rarement droit.</p>
+      <p>C'est parce que le monde est complexe, et de nouvelles technologies, inventions de modèles d'affaires, concurrents, problèmes mondiaux, ou évolutions humaines et culturelles peuvent entrer en jeu. Nous traversons certaines des plus grandes inflexions de notre époque (l'IA, la robotique, l'industrialisation spatiale, les conflits géopolitiques et militaires). Je partagerai ci-dessous quelques enseignements et les raisons pour lesquelles nous sommes optimistes quant à l'avenir d'Amazon.</p>
+    </div>
+  </div>
+</div>
+
+<!-- INVENT NEXT INFLECTIONS -->
+<div class="section">
+  <div class="section-header">
+    <div class="sh-en">Invent the next inflections</div>
+    <div class="sh-fr">Inventer les prochaines inflexions</div>
+  </div>
+  <div class="section-body">
+    <div class="col-en">
+      <span class="lang-tag">English</span>
+      <p><strong>Wherever possible, invent the next inflections.</strong> We try to anticipate what will make customers' lives easier and better every day, and invent the next inflection.</p>
+      <p>We now have over one million robots operating in fulfillment centers helping with stowing, picking, sorting, and intra-facility transport. While this progress is substantial, we're still in the early stages of how we'll leverage robotics. Expect us to keep innovating on form factors, use case diversity, agility, grasping, and intelligence.</p>
+      <p>We've committed over $4 billion to expand our rural delivery network. Customer response has been overwhelmingly positive, with the average number of monthly Same-Day customers in rural areas nearly doubling in 2025 compared to the prior year. Once this expansion is complete, our network will be able to deliver over a billion more packages each year to customers living in over 13,000 zip codes spanning 1,200,000 square miles.</p>
+      <p>Over the last seven years, we've built Amazon Leo, a low Earth orbit satellite network, and put more than 200 satellites into space. With a few thousand more satellites launching in the coming years, the constellation is expanding rapidly. Leo will offer stronger performance (six to eight times better on uplink, two times better on downlink), at a lower cost than alternatives, and will seamlessly integrate with AWS. Delta Airlines has announced it's chosen Amazon Leo for its future Wi-Fi, beginning with 500 planes in 2028.</p>
+    </div>
+    <div class="col-fr">
+      <span class="lang-tag">Français</span>
+      <p><strong>Dans toute la mesure du possible, inventer les prochaines inflexions.</strong> Nous cherchons à anticiper ce qui rendra la vie des clients plus facile et meilleure au quotidien, et à inventer la prochaine inflexion.</p>
+      <p>Nous disposons désormais de plus d'un million de robots opérant dans nos centres de distribution, qui aident au rangement, au prélèvement, au tri et au transport interne. Si ces progrès sont substantiels, nous n'en sommes encore qu'aux premières étapes de l'exploitation que nous ferons de la robotique. Attendez-vous à ce que nous continuions à innover sur les facteurs de forme, la diversité des cas d'usage, l'agilité, la préhension et l'intelligence.</p>
+      <p>Nous nous sommes engagés à investir plus de 4 milliards de dollars pour étendre notre réseau de livraison rural. La réponse des clients a été extrêmement positive, le nombre moyen de clients bénéficiant de la livraison le jour même dans les zones rurales ayant presque doublé en 2025 par rapport à l'année précédente. Une fois cette expansion achevée, notre réseau pourra livrer plus d'un milliard de colis supplémentaires chaque année à des clients vivant dans plus de 13 000 codes postaux couvrant 1 200 000 miles carrés.</p>
+      <p>Au cours des sept dernières années, nous avons construit Amazon Leo, un réseau de satellites en orbite terrestre basse, et mis plus de 200 satellites en orbite. Avec plusieurs milliers de satellites supplémentaires qui seront lancés dans les prochaines années, la constellation s'étend rapidement. Leo offrira des performances supérieures (six à huit fois meilleures en liaison montante, deux fois meilleures en liaison descendante), à un coût inférieur aux alternatives, et s'intégrera parfaitement à AWS. Delta Airlines a annoncé avoir choisi Amazon Leo pour son futur Wi-Fi à bord, en commençant par 500 appareils en 2028.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PARALLEL PATHS -->
+<div class="section">
+  <div class="section-header">
+    <div class="sh-en">Pursue parallel paths (2 > 0)</div>
+    <div class="sh-fr">Poursuivre des voies parallèles (2 > 0)</div>
+  </div>
+  <div class="section-body">
+    <div class="col-en">
+      <span class="lang-tag">English</span>
+      <p><strong>Be willing to pursue parallel paths when it's unclear what'll best drive the desired trajectory.</strong> Too often, companies focus on what looks most tidy instead of ensuring they have enough efforts in play to achieve an important outcome.</p>
+      <p>We've built over 85 Same Day Fulfillment Centers across the U.S., delivering more than 500 million same-day units in 2026 thus far. At the same time, Prime Air now has a design that'll scale, plans to serve communities with 30 million customers by year-end, and expects to deliver half a billion packages by the end of this decade. And Amazon Now—ultra-fast delivery on thousands of items within 20 minutes—launched in India and the UAE. In India, where we have more than 360 micro-fulfillment centers, Amazon Now orders are increasing 25% month-over-month, with Prime members tripling their shopping frequency.</p>
+      <p>Another example: Grocery. We started 20 years ago with non-perishables. We bought Whole Foods Market in 2017, launched Amazon Fresh, grocery subscriptions, and store-within-a-store concepts. Our grocery business has grown to over $150 billion in gross sales in 2025, making Amazon the second-largest grocer in the U.S. Since introducing perishables into Same-Day Delivery in early 2025, perishables sales have grown by over 40 times.</p>
+      <p>There's invention and experimentation required, and pursuing multiple paths gives you the best chance to find it.</p>
+    </div>
+    <div class="col-fr">
+      <span class="lang-tag">Français</span>
+      <p><strong>Être prêt à poursuivre des voies parallèles lorsqu'il n'est pas évident de savoir ce qui permettra le mieux d'atteindre la trajectoire souhaitée.</strong> Trop souvent, les entreprises se concentrent sur ce qui paraît le plus ordonné plutôt que de s'assurer qu'elles ont suffisamment d'efforts en cours pour atteindre un objectif important.</p>
+      <p>Nous avons construit plus de 85 centres de distribution Same Day aux États-Unis, livrant plus de 500 millions d'unités le jour même en 2026 jusqu'à présent. Parallèlement, Prime Air dispose désormais d'un modèle évolutif, prévoit de desservir des communautés représentant 30 millions de clients d'ici la fin de l'année, et s'attend à livrer un demi-milliard de colis d'ici la fin de la décennie. Et Amazon Now — la livraison ultra-rapide de milliers d'articles en 20 minutes — a été lancé en Inde et aux Émirats arabes unis. En Inde, où nous disposons de plus de 360 micro-entrepôts, les commandes Amazon Now augmentent de 25 % mois après mois, les membres Prime triplant leur fréquence d'achat.</p>
+      <p>Autre exemple : l'épicerie. Nous avons commencé il y a 20 ans avec les produits non périssables. Nous avons racheté Whole Foods Market en 2017, lancé Amazon Fresh, des abonnements épicerie et des concepts de magasin dans le magasin. Notre activité épicerie a atteint plus de 150 milliards de dollars de ventes brutes en 2025, faisant d'Amazon le deuxième plus grand épicier des États-Unis. Depuis l'introduction des produits frais dans la livraison le jour même début 2025, les ventes de produits périssables ont été multipliées par plus de 40.</p>
+      <p>L'invention et l'expérimentation sont nécessaires, et poursuivre plusieurs voies parallèles vous donne les meilleures chances de réussir.</p>
+    </div>
+  </div>
+</div>
+
+<!-- BET BIG ON AI -->
+<div class="section">
+  <div class="section-header">
+    <div class="sh-en">When you identify disproportionate inflections, bet big — AI</div>
+    <div class="sh-fr">Face aux inflexions majeures, miser gros — l'IA</div>
+  </div>
+  <div class="section-body">
+    <div class="col-en">
+      <span class="lang-tag">English</span>
+      <p><strong>When you identify disproportionate inflections, bet big.</strong> One of these seminal shifts is AI. Every customer experience will be reinvented by AI. I've followed the public debate on whether this technology is over-hyped or if we're in a bubble. My strong conviction is that the answers are no, no, and yes (the margins and ROIC will be appealing).</p>
+      <p>We have never seen a technology more quickly adopted than AI. ChatGPT reached 100 million users in two months—four times faster than TikTok and 15 times faster than Instagram. Both OpenAI and Anthropic have revenue run rates reportedly approaching $30 billion. When Edison opened his first power station in 1882, most people saw a better light. What they couldn't see was that electricity would reorganize every factory, home, and industry. AI may have comparable impact. The difference is that electricity took 40 years. AI appears to be moving ten times faster.</p>
+      <p>Amazon is smack in the middle of this land rush. Three years after AWS launched commercially, it had a $58 million revenue run rate. Three years into this AI wave, AWS's AI revenue run rate is over $15 billion in Q1 2026—nearly 260 times larger—and ascending rapidly. AWS added 3.9 gigawatts of new power capacity in 2025, expects to double total power capacity by end of 2027, and is monetizing that capacity as fast as it's installed. In Q4 2025, AWS reported 24% YoY growth with a $142 billion revenue run rate.</p>
+      <p>Our chips business is on fire. Our second version of custom AI silicon (Trainium2) had about 30% better price-performance than comparable GPUs. Trainium3, just started shipping at the start of 2026, is 30–40% more price-performant than Trainium2. Our annual revenue run rate for our chips business is now over $20 billion, growing triple digit percentages YoY. If our chips business was standalone and sold chips to third parties as other leading chip companies do, our annual run rate would be ~$50 billion.</p>
+      <p>We are willing to make large capex investments and endure short-term FCF headwinds for the substantial medium to long-term FCF surplus. AI is a once-in-a-lifetime opportunity. We're not going to be conservative in how we play this.</p>
+    </div>
+    <div class="col-fr">
+      <span class="lang-tag">Français</span>
+      <p><strong>Lorsque vous identifiez des inflexions disproportionnées, misez gros.</strong> L'une de ces mutations fondamentales est l'IA. Chaque expérience client sera réinventée par l'IA. J'ai suivi le débat public sur la question de savoir si cette technologie est survalorisée ou si nous sommes dans une bulle. Ma conviction profonde est que les réponses sont non, non et oui (les marges et le ROIC seront attractifs).</p>
+      <p>Nous n'avons jamais vu une technologie adoptée aussi rapidement que l'IA. ChatGPT a atteint 100 millions d'utilisateurs en deux mois — quatre fois plus vite que TikTok et 15 fois plus vite qu'Instagram. OpenAI et Anthropic auraient des taux de croissance de revenus approchant les 30 milliards de dollars chacun. Lorsqu'Edison a ouvert sa première centrale électrique en 1882, la plupart des gens y voyaient simplement un meilleur éclairage. Ce qu'ils ne pouvaient pas voir, c'est que l'électricité allait réorganiser chaque usine, chaque foyer et chaque industrie sur Terre. L'IA pourrait avoir un impact comparable. La différence est que l'électricité a mis 40 ans à atteindre ce stade. L'IA semble évoluer dix fois plus vite.</p>
+      <p>Amazon est au cœur de cette ruée vers l'or. Trois ans après le lancement commercial d'AWS, son taux de revenus annualisé était de 58 millions de dollars. Trois ans après le début de cette vague IA, le taux de revenus IA d'AWS dépasse 15 milliards de dollars au premier trimestre 2026 — près de 260 fois plus élevé — et en progression rapide. AWS a ajouté 3,9 gigawatts de nouvelle capacité électrique en 2025, prévoit de doubler sa capacité totale d'ici fin 2027, et monétise cette capacité aussi vite qu'elle est installée. Au quatrième trimestre 2025, AWS a enregistré une croissance de 24 % en glissement annuel avec un taux de revenus annualisé de 142 milliards de dollars.</p>
+      <p>Notre activité de puces est en plein essor. Notre deuxième version de puces IA personnalisées (Trainium2) offrait environ 30 % de meilleur rapport qualité-prix que les GPU comparables. Trainium3, qui vient de commencer à être livré début 2026, est 30 à 40 % plus performant que Trainium2. Notre taux de revenus annualisé pour notre activité de puces dépasse désormais 20 milliards de dollars, avec une croissance à trois chiffres en glissement annuel. Si notre activité de puces était autonome et vendait des puces à des tiers comme le font les autres grandes entreprises du secteur, notre taux annualisé serait d'environ 50 milliards de dollars.</p>
+      <p>Nous sommes prêts à réaliser d'importants investissements en immobilisations et à endurer des contraintes à court terme sur le flux de trésorerie disponible en vue d'un excédent substantiel à moyen et long terme. L'IA est une opportunité unique dans une vie. Nous n'allons pas jouer la prudence dans ce domaine.</p>
+    </div>
+  </div>
+</div>
+
+<!-- BACK TO THE STARTING LINE -->
+<div class="section">
+  <div class="section-header">
+    <div class="sh-en">Accept going back to the starting line</div>
+    <div class="sh-fr">Accepter de repartir de zéro</div>
+  </div>
+  <div class="section-body">
+    <div class="col-en">
+      <span class="lang-tag">English</span>
+      <p><strong>Accept going back to the starting line to redirect the trajectory.</strong> When you have a product that's working at scale, one of the hardest decisions to make is to go back to the starting line. It feels like going backwards. But, there are reasons to do so, and AI is making it easier and more imperative.</p>
+      <p>The Bedrock team spun up a separable group of six very skilled engineers who were excited about starting over and building on our agentic coding service (Kiro), and delivered a completely new inference engine (which we call "Mantle") in 76 days. Mantle has become the backbone of our Bedrock service, which has nearly doubled month-over-month this past March, and processed more tokens in Q1 2026 than all of the tokens processed in the prior years combined.</p>
+      <p>Alexa is another example. With 600 million active endpoints, Alexa has scale and a very large customer base. But when transformative technology arrives, you have to pursue it—even if it's disruptive. The new Alexa+ is so much more capable than her prior self. Customers are talking to Alexa twice as much, completing purchases on devices three times more, streaming music 25% more, and using smart home functionality 50% more. Alexa is still early in its journey to be the world's best personal assistant. But, it wouldn't be on its way again without going back to the start.</p>
+    </div>
+    <div class="col-fr">
+      <span class="lang-tag">Français</span>
+      <p><strong>Accepter de repartir de zéro pour réorienter la trajectoire.</strong> Lorsque vous disposez d'un produit qui fonctionne à grande échelle, l'une des décisions les plus difficiles à prendre est de revenir à la case départ. Cela ressemble à un recul. Mais il y a des raisons de le faire, et l'IA rend cela à la fois plus aisé et plus impératif.</p>
+      <p>L'équipe Bedrock a constitué un groupe distinct de six ingénieurs très compétents, enthousiastes à l'idée de tout recommencer et de s'appuyer sur notre service de codage agentique (Kiro), et a livré un tout nouveau moteur d'inférence (que nous appelons « Mantle ») en 76 jours. Mantle est devenu l'épine dorsale de notre service Bedrock, qui a presque doublé mois après mois en mars dernier, et a traité en Q1 2026 plus de tokens que l'ensemble des tokens traités lors de toutes les années précédentes réunies.</p>
+      <p>Alexa en est un autre exemple. Avec 600 millions de points d'accès actifs, Alexa dispose d'une grande échelle et d'une très vaste clientèle. Mais lorsque des technologies transformatrices apparaissent, il faut les saisir — même si c'est perturbateur. La nouvelle Alexa+ est tellement plus capable que son ancienne version. Les clients s'adressent à Alexa deux fois plus souvent, effectuent trois fois plus d'achats sur les appareils, écoutent 25 % plus de musique en streaming et utilisent les fonctionnalités de maison connectée 50 % davantage. Alexa n'en est encore qu'aux prémices de son parcours pour devenir le meilleur assistant personnel au monde. Mais elle ne serait pas en bonne voie sans ce retour à la case départ.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CULTURE -->
+<div class="section">
+  <div class="section-header">
+    <div class="sh-en">Cultivate a culture that can cope with squiggly lines</div>
+    <div class="sh-fr">Cultiver une culture capable de naviguer les lignes tortueuses</div>
+  </div>
+  <div class="section-body">
+    <div class="col-en">
+      <span class="lang-tag">English</span>
+      <p><strong>Cultivate a culture that can cope with squiggly lines.</strong> You may be operating successfully for several years, when an inflection shatters this placidity. The historical business landscape is littered with companies that wished away big new inflections to their own detriment.</p>
+      <p>You need to have the right data, mechanisms, and truth-tellers to deeply question what's changed. You have to have people and a culture comfortable operating with ambiguity. You need to invent and experiment like crazy—many experiments will fail. You need to learn constantly. You need to move fast, have teammates that act like true owners, and be scrappy. At Amazon, we talk a lot about operating like the world's biggest startup. It's the primary reason we've worked to flatten our organization the last year, and we're pleased with the improved speed of decision-making and delivery.</p>
+      <p>You have to be comfortable potentially over-rotating when pursuing one of these big needle-movers. And then, if you learn something new that requires course correcting, do it quickly. Inflections aren't usually smooth or calm. They favor the bold and adaptable.</p>
+      <p>You have to be willing to reimagine not only every customer experience, but also how you organize and get work done. And, you have to be able to withstand criticism. We have historically shared that we're "comfortable being misunderstood for long periods of time."</p>
+    </div>
+    <div class="col-fr">
+      <span class="lang-tag">Français</span>
+      <p><strong>Cultiver une culture capable de naviguer les lignes tortueuses.</strong> Vous pouvez fonctionner avec succès pendant plusieurs années, lorsqu'une inflexion brise soudainement cette tranquillité. Le paysage commercial historique est jonché d'entreprises qui ont voulu ignorer de grandes nouvelles inflexions à leurs propres dépens.</p>
+      <p>Vous devez disposer des bonnes données, mécanismes et personnes capables de dire la vérité pour remettre profondément en question ce qui a changé. Vous devez avoir des collaborateurs et une culture à l'aise avec l'ambiguïté. Vous devez inventer et expérimenter sans relâche — de nombreuses expériences échoueront. Vous devez apprendre constamment. Vous devez aller vite, avoir des coéquipiers qui agissent comme de véritables propriétaires et faire preuve de débrouillardise. Chez Amazon, nous parlons beaucoup de fonctionner comme la plus grande start-up du monde. C'est la principale raison pour laquelle nous avons travaillé à aplatir notre organisation l'année dernière, et nous sommes satisfaits de l'amélioration de la vitesse de prise de décision et de livraison.</p>
+      <p>Vous devez être à l'aise avec la possibilité d'aller trop loin lorsque vous poursuivez l'un de ces grands facteurs de changement. Et si vous apprenez quelque chose de nouveau qui nécessite une correction de cap, faites-le rapidement. Les inflexions ne sont généralement ni lisses ni calmes. Elles favorisent les audacieux et les adaptables.</p>
+      <p>Vous devez être prêt à réimaginer non seulement chaque expérience client, mais aussi la façon dont vous vous organisez et travaillez. Et vous devez être capable de résister aux critiques. Nous avons toujours affirmé être « à l'aise avec le fait d'être mal compris pendant de longues périodes. »</p>
+    </div>
+  </div>
+</div>
+
+<!-- FINANCIALS -->
+<div class="section">
+  <div class="section-header">
+    <div class="sh-en">2025 Financial results</div>
+    <div class="sh-fr">Résultats financiers 2025</div>
+  </div>
+  <div class="numbers-block">
+    <div class="num-en">
+      <div class="num-label">English</div>
+      <p><strong>Revenue:</strong> $717B (+12% YoY from $638B)<br>
+      <strong>North America:</strong> $426B (+10% YoY)<br>
+      <strong>International:</strong> $162B (+13% YoY)<br>
+      <strong>AWS:</strong> $129B (+20% YoY)<br>
+      <strong>Operating Income:</strong> $80B (+17% YoY, 11.2% margin)<br>
+      <strong>Free Cash Flow:</strong> $11B (down from $38B, driven by $50.7B increase in capex for AI)</p>
+    </div>
+    <div class="num-fr">
+      <div class="num-label">Français</div>
+      <p><strong>Revenus :</strong> 717 Mds$ (+12 % en glissement annuel depuis 638 Mds$)<br>
+      <strong>Amérique du Nord :</strong> 426 Mds$ (+10 %)<br>
+      <strong>International :</strong> 162 Mds$ (+13 %)<br>
+      <strong>AWS :</strong> 129 Mds$ (+20 %)<br>
+      <strong>Résultat opérationnel :</strong> 80 Mds$ (+17 %, marge 11,2 %)<br>
+      <strong>Flux de trésorerie disponible :</strong> 11 Mds$ (en baisse par rapport à 38 Mds$, dû à une hausse des investissements de 50,7 Mds$ pour l'IA)</p>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<div class="section">
+  <div class="section-header">
+    <div class="sh-en">Closing thoughts</div>
+    <div class="sh-fr">Réflexions finales</div>
+  </div>
+  <div class="section-body">
+    <div class="col-en">
+      <span class="lang-tag">English</span>
+      <p>Our retail business is now approaching $600 billion in topline, yet roughly 80% of global retail sales still happens in physical stores. That will change.</p>
+      <p>AWS is at a $142 billion revenue run rate, and yet 85% of global IT spend remains on-premises. This will change.</p>
+      <p>We're on the verge of launching Amazon Leo, just beginning commercial service with Zoox (our autonomous-driving ride-hailing service), and still quite early in what we'll build in robotics.</p>
+      <p>Across all of this, AI is not a standalone initiative—it's a multiplier. It will reshape every customer experience we offer and unlock entirely new ones.</p>
+      <p>Progress will not be linear. There will be moments of acceleration and moments where we adjust course. We will experiment, invest disproportionately behind what matters, and pull back when something isn't working.</p>
+      <p>This is the environment where Amazon does its best work. We've built a culture that thrives in constantly changing circumstances by being inventive, comfortable operating along multiple paths, revisiting first principles, and committing fully to the ideas that can meaningfully improve customers' lives.</p>
+      <p>Thank you to our teammates for everything you've done this past year and for what's ahead. I look forward to pursuing this amazing adventure together.</p>
+    </div>
+    <div class="col-fr">
+      <span class="lang-tag">Français</span>
+      <p>Notre activité de vente au détail approche désormais les 600 milliards de dollars de chiffre d'affaires, alors que 80 % environ des ventes mondiales au détail se font encore dans des magasins physiques. Cela changera.</p>
+      <p>AWS affiche un taux de revenus annualisé de 142 milliards de dollars, et pourtant 85 % des dépenses mondiales en informatique restent sur site. Cela changera.</p>
+      <p>Nous sommes sur le point de lancer Amazon Leo, nous débutons tout juste le service commercial avec Zoox (notre service de covoiturage autonome), et nous n'en sommes encore qu'aux prémices de ce que nous construirons en matière de robotique.</p>
+      <p>Dans tout cela, l'IA n'est pas une initiative autonome — c'est un multiplicateur. Elle remodèlera chaque expérience client que nous proposons et en rendra entièrement de nouvelles possibles.</p>
+      <p>Les progrès ne seront pas linéaires. Il y aura des moments d'accélération et des moments où nous ajusterons le cap. Nous expérimenterons, investirons de manière disproportionnée dans ce qui compte, et ferons marche arrière lorsque quelque chose ne fonctionne pas.</p>
+      <p>C'est dans cet environnement qu'Amazon donne le meilleur d'elle-même. Nous avons construit une culture qui prospère dans des circonstances en constante évolution en faisant preuve d'inventivité, en étant à l'aise pour opérer sur plusieurs voies simultanément, en revisitant les principes fondamentaux et en s'engageant pleinement dans les idées susceptibles d'améliorer significativement la vie des clients.</p>
+      <p>Merci à tous nos collaborateurs pour tout ce que vous avez accompli cette année et pour ce qui nous attend. J'ai hâte de poursuivre ensemble cette incroyable aventure.</p>
+    </div>
+  </div>
+  <div class="closing">
+    <div>
+      <div class="sig">
+        Sincerely,
+        <span class="sig-name">Andy Jassy</span>
+        <span class="sig-title">President and Chief Executive Officer, Amazon.com, Inc.</span>
+      </div>
+    </div>
+    <div>
+      <div class="sig">
+        Cordialement,
+        <span class="sig-name">Andy Jassy</span>
+        <span class="sig-title">Président-directeur général, Amazon.com, Inc.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</body>
+</html>
