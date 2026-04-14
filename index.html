@@ -388,17 +388,36 @@ function startPlay(){
   document.getElementById('playBtn').classList.add('active');
   playStep();
 }
+function showBack(){
+  if(!cards[idx])return;
+  const c=cards[idx];
+  flipped=true;
+  document.getElementById('card').className='card back';
+  document.getElementById('sideTag').textContent='Kanji · Back';
+  document.getElementById('frontView').style.display='none';
+  document.getElementById('backView').style.display='';
+  document.getElementById('bKanji').textContent=c[2];
+  document.getElementById('bChinese').textContent=c[3];
+  document.getElementById('bMeaning').textContent=c[4];
+}
+
+const FRONT_PAUSE=800;
 function playStep(){
   if(!playing)return;
   showCard();
   document.getElementById('playInfo').textContent='Playing '+(idx+1)+' of '+cards.length+'…';
   speakText(cards[idx][0],()=>{
     if(!playing)return;
+    // Brief pause on front, then flip to back
     playTimer=setTimeout(()=>{
       if(!playing)return;
-      if(idx<cards.length-1){idx++;playStep();}
-      else{stopPlay();document.getElementById('playInfo').textContent='Done — all '+cards.length+' cards played.';}
-    },PLAY_DELAY);
+      showBack();
+      playTimer=setTimeout(()=>{
+        if(!playing)return;
+        if(idx<cards.length-1){idx++;playStep();}
+        else{stopPlay();document.getElementById('playInfo').textContent='Done — all '+cards.length+' cards played.';}
+      },PLAY_DELAY);
+    },FRONT_PAUSE);
   });
 }
 function stopPlay(){
