@@ -22,7 +22,8 @@ h1 .flag{font-size:20px}
 .card.back{background:#f5f4f0}
 .side-tag{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#aaa;margin-bottom:20px}
 .front-flag{font-size:28px;margin-bottom:8px}
-.front-word{font-size:52px;line-height:1.1;color:#1a1a18;margin-bottom:10px;font-weight:300;letter-spacing:-.01em}
+.front-word{font-size:48px;line-height:1.1;color:#1a1a18;margin-bottom:10px;font-weight:300;letter-spacing:-.01em}
+.front-sentence{font-size:13px;color:#555;line-height:1.6;font-style:italic;margin-bottom:12px;max-width:420px}
 .speak-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:20px;border:0.5px solid #c0bdb4;background:#fff;color:#555;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:4px}
 .speak-btn:hover{border-color:#888;background:#f5f4f0}
 .speak-btn.speaking{border-color:#1a56a8;color:#1a56a8;background:#e8eef8}
@@ -57,6 +58,7 @@ h1 .flag{font-size:20px}
     <div id="frontView">
       <div class="front-flag">🇫🇷</div>
       <div class="front-word" id="fWord"></div>
+      <div class="front-sentence" id="fSentFr"></div>
       <button class="speak-btn" id="speakBtn" onclick="speakCurrent(event)">
         <svg class="speak-icon" viewBox="0 0 16 16" fill="none">
           <path d="M9 2.5C9 2.5 11.5 4 11.5 8C11.5 12 9 13.5 9 13.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
@@ -70,7 +72,6 @@ h1 .flag{font-size:20px}
     <div id="backView" style="display:none">
       <div class="back-translation" id="bTrans"></div>
       <div class="divider"></div>
-      <div class="back-sentence-fr" id="bSentFr"></div>
       <div class="back-sentence-en" id="bSentEn"></div>
     </div>
     <div class="counter" id="counter"></div>
@@ -2927,10 +2928,9 @@ function loadVoices(){
 }
 if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=loadVoices;loadVoices();}
 
-function speakText(text,onDone){
+function speakOne(text,onDone){
   if(!window.speechSynthesis){onDone&&onDone();return;}
-  window.speechSynthesis.cancel();
-  const utt=new SpeechSynthesisUtterance(text.split(' / ')[0]);
+  const utt=new SpeechSynthesisUtterance(text);
   utt.lang='fr-FR';utt.rate=0.88;utt.pitch=1.0;
   if(frVoice)utt.voice=frVoice;
   utt.onend=()=>{onDone&&onDone();};
@@ -2938,12 +2938,25 @@ function speakText(text,onDone){
   window.speechSynthesis.speak(utt);
 }
 
+function speakText(text,onDone){
+  if(!window.speechSynthesis){onDone&&onDone();return;}
+  window.speechSynthesis.cancel();
+  speakOne(text,onDone);
+}
+
 function speakCurrent(e){
   e&&e.stopPropagation();
   if(!cards[idx])return;
   const btn=document.getElementById('speakBtn'),lbl=document.getElementById('speakLabel');
   btn.classList.add('speaking');lbl.textContent='Speaking…';
-  speakText(cards[idx][0],()=>{btn.classList.remove('speaking');lbl.textContent='Pronounce';});
+  window.speechSynthesis.cancel();
+  speakOne(cards[idx][0],()=>{
+    setTimeout(()=>{
+      speakOne(cards[idx][2],()=>{
+        btn.classList.remove('speaking');lbl.textContent='Pronounce';
+      });
+    },400);
+  });
 }
 
 function init(){
@@ -2969,11 +2982,12 @@ function showCard(){
   document.getElementById('frontView').style.display='';
   document.getElementById('backView').style.display='none';
   document.getElementById('fWord').textContent=c[0];
+  document.getElementById('fSentFr').textContent=c[2];
   document.getElementById('speakLabel').textContent='Pronounce';
   document.getElementById('speakBtn').classList.remove('speaking');
   document.getElementById('counter').textContent=(idx+1)+' of '+cards.length;
   document.getElementById('prog').style.width=Math.round((idx/(cards.length-1||1))*100)+'%';
-  document.getElementById('hintTxt').textContent='Tap card to reveal translation & example sentence';
+  document.getElementById('hintTxt').textContent='Tap card to reveal English translation';
 }
 
 function flip(){
@@ -2986,7 +3000,6 @@ function flip(){
     document.getElementById('frontView').style.display='none';
     document.getElementById('backView').style.display='';
     document.getElementById('bTrans').textContent=c[1];
-    document.getElementById('bSentFr').textContent=c[2];
     document.getElementById('bSentEn').textContent=c[3];
     document.getElementById('hintTxt').textContent='Tap again to return to front';
   } else { showCard(); }
@@ -3005,7 +3018,6 @@ function showBack(){
   document.getElementById('frontView').style.display='none';
   document.getElementById('backView').style.display='';
   document.getElementById('bTrans').textContent=c[1];
-  document.getElementById('bSentFr').textContent=c[2];
   document.getElementById('bSentEn').textContent=c[3];
 }
 
@@ -3020,17 +3032,23 @@ function playStep(){
   if(!playing)return;
   showCard();
   document.getElementById('playInfo').textContent='Playing '+(idx+1)+' of '+cards.length+'…';
-  speakText(cards[idx][0],()=>{
+  speakOne(cards[idx][0],()=>{
     if(!playing)return;
     playTimer=setTimeout(()=>{
       if(!playing)return;
-      showBack();
-      playTimer=setTimeout(()=>{
+      speakOne(cards[idx][2],()=>{
         if(!playing)return;
-        if(idx<cards.length-1){idx++;playStep();}
-        else{stopPlay();document.getElementById('playInfo').textContent='Done — all '+cards.length+' cards played.';}
-      },PLAY_DELAY);
-    },600);
+        playTimer=setTimeout(()=>{
+          if(!playing)return;
+          showBack();
+          playTimer=setTimeout(()=>{
+            if(!playing)return;
+            if(idx<cards.length-1){idx++;playStep();}
+            else{stopPlay();document.getElementById('playInfo').textContent='Done — all '+cards.length+' cards played.';}
+          },PLAY_DELAY);
+        },400);
+      });
+    },400);
   });
 }
 
