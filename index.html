@@ -19,7 +19,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card:hover{border-color:#888}
 .card.back{background:#f5f4f0}
 .side-tag{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:16px}
-.front-hira{font-size:56px;line-height:1.1;color:#1a1a18;margin-bottom:8px}
+.front-hira{font-size:56px;line-height:1.1;color:#1a1a18;margin-bottom:4px}
+.front-kata{font-size:22px;color:#888;margin-bottom:6px;letter-spacing:.04em}
 .front-romaji{font-size:18px;color:#555;margin-bottom:10px;font-style:italic}
 .speak-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:20px;border:0.5px solid #c0bdb4;background:#fff;color:#555;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:4px}
 .speak-btn:hover{border-color:#888;background:#f5f4f0}
@@ -51,6 +52,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="side-tag" id="sideTag">Hiragana · Front</div>
     <div id="frontView">
       <div class="front-hira" id="fHira"></div>
+      <div class="front-kata" id="fKata"></div>
       <div class="front-romaji" id="fRomaji"></div>
       <button class="speak-btn" id="speakBtn" onclick="speakCurrent(event)">
         <svg class="speak-icon" viewBox="0 0 16 16" fill="none">
@@ -308,6 +310,10 @@ let current=DECK_ALL,cards=[],idx=0,flipped=false;
 let jpVoice=null,playing=false,playTimer=null;
 const PLAY_DELAY=2200;
 
+function toKatakana(str){
+  return str.replace(/[\u3041-\u3096]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60));
+}
+
 function loadVoices(){
   const v=window.speechSynthesis.getVoices();
   jpVoice=v.find(x=>x.lang==='ja-JP')||v.find(x=>x.lang.startsWith('ja'))||null;
@@ -356,6 +362,7 @@ function showCard(){
   document.getElementById('frontView').style.display='';
   document.getElementById('backView').style.display='none';
   document.getElementById('fHira').textContent=c[0];
+  document.getElementById('fKata').textContent=toKatakana(c[0]);
   document.getElementById('fRomaji').textContent=c[1];
   document.getElementById('speakLabel').textContent='Pronounce';
   document.getElementById('speakBtn').classList.remove('speaking');
