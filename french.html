@@ -71,7 +71,6 @@ h1 span{font-size:12px;font-weight:400;color:#888;margin-left:6px}
       </div>
       <div id="backView" style="display:none">
         <div class="back-translation" id="bTranslation"></div>
-        <div class="back-sentence" id="bSentence"></div>
         <div class="back-sentence-en" id="bSentenceEn"></div>
       </div>
       <div class="counter" id="counter"></div>
@@ -104,8 +103,10 @@ function speakText(text,onDone){
   const utt=new SpeechSynthesisUtterance(text);
   utt.lang='fr-FR';utt.rate=0.85;utt.pitch=1.0;
   if(frVoice)utt.voice=frVoice;
-  utt.onend=()=>{onDone&&onDone();};
-  utt.onerror=()=>{onDone&&onDone();};
+  let fired=false;
+  const done=()=>{if(!fired){fired=true;onDone&&onDone();}};
+  utt.onend=done;
+  utt.onerror=done;
   window.speechSynthesis.speak(utt);
 }
 
@@ -167,7 +168,6 @@ function showBack(){
   document.getElementById('frontView').style.display='none';
   document.getElementById('backView').style.display='';
   document.getElementById('bTranslation').textContent=c[1];
-  document.getElementById('bSentence').textContent=c[2];
   document.getElementById('bSentenceEn').textContent=c[3];
 }
 
