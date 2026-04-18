@@ -3,25 +3,24 @@
 body{font-family:var(--font-serif,'Georgia',serif)}
 .wrap{padding:1.5rem 0 3rem}
 .art-header{border-bottom:1px solid var(--color-border-primary);padding-bottom:1.25rem;margin-bottom:2rem}
-.label{font-family:var(--font-sans,'system-ui',sans-serif);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-tertiary);font-weight:500}
-.art-title{font-family:var(--font-serif,'Georgia',serif);font-size:clamp(22px,4vw,34px);font-weight:500;line-height:1.18;color:var(--color-text-primary);margin:.5rem 0 .6rem}
-.art-sub{font-size:16px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:.8rem}
-.byline{font-family:var(--font-sans);font-size:12.5px;color:var(--color-text-tertiary)}
+.label{font-family:var(--font-sans,'system-ui',sans-serif);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-tertiary);font-weight:500}
+.art-title{font-family:var(--font-serif,'Georgia',serif);font-size:clamp(26px,4.5vw,38px);font-weight:500;line-height:1.15;color:var(--color-text-primary);margin:.5rem 0 .6rem}
+.art-sub{font-size:18px;color:var(--color-text-secondary);line-height:1.55;margin-bottom:.8rem}
+.byline{font-family:var(--font-sans);font-size:14px;color:var(--color-text-tertiary)}
 .global-bar{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap}
-.global-bar .glabel{font-family:var(--font-sans);font-size:12px;color:var(--color-text-secondary)}
-.btn-voice{font-family:var(--font-sans);font-size:12px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);border-radius:var(--border-radius-md);padding:5px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.global-bar .glabel{font-family:var(--font-sans);font-size:13px;color:var(--color-text-secondary)}
+.btn-voice{font-family:var(--font-sans);font-size:13px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);border-radius:var(--border-radius-md);padding:6px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
 .btn-voice:hover{background:var(--color-background-secondary)}
-.btn-voice.active{border-color:var(--color-border-primary)}
 .col-headers{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:.5rem;margin-bottom:1rem}
-.col-head{font-family:var(--font-sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-tertiary);font-weight:500}
-.col-head.fr-head{padding-left:1.25rem;border-left:0.5px solid var(--color-border-tertiary)}
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);padding:1rem 0}
-.pair.quote-row{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;margin-bottom:.5rem;border:none}
-.cell{font-size:15px;line-height:1.75;color:var(--color-text-primary)}
-.cell.en{padding-right:1.25rem}
-.cell.fr{padding-left:1.25rem;border-left:0.5px solid var(--color-border-tertiary);position:relative}
-.cell.quote{font-style:italic;font-size:14.5px;color:var(--color-text-secondary)}
-.pbtn{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-sans);font-size:11px;border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-tertiary);border-radius:var(--border-radius-md);padding:2px 7px;cursor:pointer;float:right;margin-left:8px;margin-bottom:4px;vertical-align:top}
+.col-head{font-family:var(--font-sans);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-tertiary);font-weight:500}
+.col-head.fr-head{padding-left:1.5rem;border-left:0.5px solid var(--color-border-tertiary)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);padding:1.25rem 0}
+.pair.quote-row{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1.25rem;margin-bottom:.5rem;border:none}
+.cell{font-size:18px;line-height:1.8;color:var(--color-text-primary)}
+.cell.en{padding-right:1.5rem}
+.cell.fr{padding-left:1.5rem;border-left:0.5px solid var(--color-border-tertiary);position:relative}
+.cell.quote{font-style:italic;font-size:17px;color:var(--color-text-secondary)}
+.pbtn{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-sans);font-size:12px;border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-tertiary);border-radius:var(--border-radius-md);padding:3px 8px;cursor:pointer;float:right;margin-left:8px;margin-bottom:6px;vertical-align:top}
 .pbtn:hover{background:var(--color-background-secondary);color:var(--color-text-secondary)}
 .pbtn.speaking{color:var(--color-text-info);border-color:var(--color-border-info)}
 </style>
@@ -29,7 +28,7 @@ body{font-family:var(--font-serif,'Georgia',serif)}
 <div class="wrap">
 <div class="art-header">
   <div class="label">Opinion · Commentary</div>
-  <h1 class="art-title">America Loses Its Will to Work<br><span style="font-size:clamp(18px,2.8vw,26px);color:var(--color-text-secondary)">L'Amérique perd sa volonté de travailler</span></h1>
+  <h1 class="art-title">America Loses Its Will to Work<br><span style="font-size:clamp(20px,3.2vw,30px);color:var(--color-text-secondary)">L'Amérique perd sa volonté de travailler</span></h1>
   <p class="art-sub">From the War on Poverty to 'quiet quitting,' we've stopped appreciating the value of honest labor. — De la Guerre contre la pauvreté au «&thinsp;quiet quitting&thinsp;», nous avons cessé d'apprécier la valeur du travail honnête.</p>
   <div class="byline">Barton Swaim &nbsp;·&nbsp; The Wall Street Journal &nbsp;·&nbsp; April 17, 2026</div>
 </div>
