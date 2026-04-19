@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Petit Prince — Parallel Text Reader</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#fdfaf5;color:#1a1a1a;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:210px;flex-shrink:0;border-right:1px solid #e0d9ce;padding:0.75rem 0;overflow-y:auto;position:sticky;top:0;height:100vh;background:#f7f3ec}
+.sidebar-title{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#999;padding:0 0.75rem 0.5rem;font-family:sans-serif;font-weight:600}
+.ch-btn{display:block;width:100%;text-align:left;font-size:12.5px;padding:5px 0.75rem;border:none;background:none;color:#555;cursor:pointer;line-height:1.4;font-family:sans-serif}
+.ch-btn:hover{background:#ede8df;color:#222}
+.ch-btn.active{background:#d4c9a8;color:#3a2e0e;font-weight:600}
+.main{flex:1;padding:2rem 2.5rem;max-width:1000px}
+.ch-header{margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid #e0d9ce}
+.ch-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#aaa;font-family:sans-serif;font-weight:600}
+.ch-title{font-size:20px;font-weight:700;color:#1a1a1a;margin-top:3px;font-family:sans-serif}
+.controls{display:flex;gap:8px;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.ctrl-btn{font-size:12px;padding:5px 14px;border-radius:6px;border:1px solid #c8bfa8;background:#fff;color:#333;cursor:pointer;font-family:sans-serif}
+.ctrl-btn:hover{background:#f0eade}
+.ctrl-btn.go{background:#4a6741;border-color:#3a5232;color:#fff}
+.ctrl-btn.go:hover{background:#3a5232}
+.voice-select{font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid #c8bfa8;background:#fff;color:#333;max-width:180px;font-family:sans-serif}
+.rate-lbl{font-size:11px;color:#888;font-family:sans-serif}
+.col-labels{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:0.25rem}
+.col-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#aaa;font-weight:600;font-family:sans-serif}
+.para-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding:0.9rem 0.5rem;border-top:1px solid #e8e2d6;cursor:pointer;border-radius:6px;transition:background .15s}
+.para-row:hover{background:#f3ede1}
+.para-row.playing{background:#e8f0e4}
+.fr-text{font-size:15px;line-height:1.85;color:#1a1a1a;display:flex;gap:8px;align-items:flex-start}
+.pbtn{flex-shrink:0;margin-top:4px;width:20px;height:20px;border-radius:50%;border:1px solid #c8bfa8;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#888;font-size:8px;transition:all .15s;font-family:sans-serif}
+.pbtn:hover{background:#f0eade}
+.pbtn.active{background:#4a6741;border-color:#3a5232;color:#fff}
+.en-text{font-size:14px;line-height:1.85;color:#555;font-family:sans-serif}
+.nav-row{display:flex;justify-content:space-between;margin-top:1.5rem;padding-top:0.75rem;border-top:1px solid #e0d9ce}
+h1.page-title{font-size:13px;color:#888;font-family:sans-serif;font-weight:400;padding:0.6rem 0.75rem;border-bottom:1px solid #e0d9ce;letter-spacing:.03em}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+  <div class="page-title">Le Petit Prince</div>
+  <div style="height:.5rem"></div>
+  <div class="sidebar-title">Chapters</div>
+  <div id="sidebar"></div>
+</div>
+<div class="main" id="main">
+  <div class="ch-header">
+    <div class="ch-label" id="chLabel"></div>
+    <div class="ch-title" id="chTitle"></div>
+  </div>
+  <div class="controls">
+    <button class="ctrl-btn go" id="readAllBtn" onclick="readAll()">▶ Read aloud</button>
+    <button class="ctrl-btn" onclick="stopAll()">■ Stop</button>
+    <select class="voice-select" id="voiceSelect"><option>Loading voices…</option></select>
+    <span class="rate-lbl">Rate:</span>
+    <input type="range" min="0.6" max="1.4" step="0.1" value="0.9" id="rateSlider" style="width:70px">
+    <span class="rate-lbl" id="rateVal">0.9×</span>
+  </div>
+  <div class="col-labels"><div class="col-label">Français</div><div class="col-label">English</div></div>
+  <div id="paras"></div>
+  <div class="nav-row">
+    <button class="ctrl-btn" id="prevBtn" onclick="goChapter(curCh-1)">← Previous</button>
+    <button class="ctrl-btn" id="nextBtn" onclick="goChapter(curCh+1)">Next →</button>
+  </div>
+</div>
+</div>
+<script>
+const chapters = [
+{title:"Chapitre I",subtitle:"Le dessin numéro 1",paras:[
+{fr:"Lorsque j'avais six ans j'ai vu, une fois, une magnifique image, dans un livre sur la Forêt Vierge qui s'appelait « Histoires Vécues ». Ça représentait un serpent boa qui avalait un fauve. Voilà la copie du dessin.",en:"When I was six years old I once saw a magnificent picture in a book about the primeval forest. It showed a boa constrictor swallowing a wild animal."},
+{fr:"On disait dans le livre : « Les serpents boas avalent leur proie tout entière, sans la mâcher. Ensuite ils ne peuvent plus bouger et ils dorment pendant les six mois de leur digestion. »",en:"The book said: 'Boa constrictors swallow their prey whole, without chewing it. Afterwards they cannot move, and they sleep through the six months of their digestion.'"},
+{fr:"J'ai alors beaucoup réfléchi sur les aventures de la jungle et, à mon tour, j'ai réussi, avec un crayon de couleur, à tracer mon premier dessin. Mon dessin numéro 1.",en:"I thought deeply about the adventures of the jungle, and in turn managed, with a coloured pencil, to make my first drawing. My Drawing Number One."},
+{fr:"J'ai montré mon chef-d'œuvre aux grandes personnes et je leur ai demandé si mon dessin leur faisait peur. Elles m'ont répondu : « Pourquoi un chapeau ferait-il peur ? »",en:"I showed my masterpiece to the grown-ups and asked whether the drawing frightened them. They answered: 'Why would a hat frighten anyone?'"},
+{fr:"Mon dessin ne représentait pas un chapeau. Il représentait un serpent boa qui digérait un éléphant. J'ai alors dessiné l'intérieur du serpent boa, afin que les grandes personnes puissent comprendre. Elles ont toujours besoin d'explications.",en:"My drawing was not a hat. It was a boa constrictor digesting an elephant. So I drew the inside of the boa constrictor, so that the grown-ups could see it clearly. They always need things explained."},
+{fr:"Les grandes personnes m'ont conseillé de laisser de côté les dessins de serpents boas et de m'intéresser plutôt à la géographie, à l'histoire, au calcul et à la grammaire. C'est ainsi que j'ai abandonné, à l'âge de six ans, une magnifique carrière de peintre.",en:"The grown-ups advised me to set aside drawings of boa constrictors and apply myself instead to geography, history, arithmetic and grammar. That is how, at the age of six, I gave up a magnificent career as a painter."},
+{fr:"J'avais été découragé par l'insuccès de mon dessin numéro 1 et de mon dessin numéro 2. Les grandes personnes ne comprennent jamais rien toutes seules, et c'est fatigant, pour les enfants, de toujours et toujours leur donner des explications.",en:"I had been disheartened by the failure of my drawings. Grown-ups never understand anything by themselves, and it is exhausting for children to always be explaining things to them."},
+{fr:"J'ai donc dû choisir un autre métier et j'ai appris à piloter des avions. J'ai volé un peu partout dans le monde. Quand j'en rencontrais une qui me semblait un peu lucide, je faisais l'expérience de mon dessin numéro 1. Mais toujours elle me répondait : « C'est un chapeau. »",en:"So I chose another profession and learned to fly airplanes. I have flown all over the world. Whenever I met someone who seemed clear-sighted, I tried my Drawing Number One on them. But they always said: 'That is a hat.'"}
+]},
+{title:"Chapitre II",subtitle:"Le petit prince apparaît",paras:[
+{fr:"J'ai ainsi vécu seul, sans personne avec qui parler véritablement, jusqu'à une panne dans le désert du Sahara, il y a six ans. Quelque chose s'était cassé dans mon moteur. Et comme je n'avais avec moi ni mécanicien, ni passagers, je me préparai à essayer de réussir, seul, une réparation difficile.",en:"I lived alone, with no one I could truly talk to, until a breakdown in the Sahara Desert six years ago. Something had broken in my engine. And since I had no mechanic or passengers, I prepared to attempt the difficult repair entirely alone."},
+{fr:"C'était donc une question de vie ou de mort pour moi. J'avais à peine de l'eau à boire pour huit jours.",en:"It was a matter of life or death. I had barely enough drinking water for eight days."},
+{fr:"Le premier soir je me suis donc endormi sur le sable à mille milles de toute terre habitée. J'étais bien plus isolé qu'un naufragé sur un radeau au milieu de l'océan. Alors vous imaginez ma surprise, au lever du jour, quand une drôle de petite voix m'a réveillé. Elle disait : « S'il vous plaît… dessine-moi un mouton ! »",en:"The first evening I fell asleep on the sand a thousand miles from any inhabited land, more isolated than a castaway on a raft in the open ocean. You can imagine my astonishment at sunrise when a funny little voice woke me, saying: 'Please… draw me a sheep!'"},
+{fr:"« Hein ! — Dessine-moi un mouton… » J'ai sauté sur mes pieds comme si j'avais été frappé par la foudre. J'ai bien frotté mes yeux. J'ai bien regardé. Et j'ai vu un petit bonhomme tout à fait extraordinaire qui me considérait gravement.",en:"'What!' 'Draw me a sheep…' I leaped to my feet as if struck by lightning. I rubbed my eyes and looked. And I saw a most extraordinary little fellow regarding me seriously."},
+{fr:"Voilà le meilleur portrait que, plus tard, j'ai réussi à faire de lui. Mais mon dessin, bien sûr, est beaucoup moins ravissant que le modèle.",en:"Here is the best portrait I later managed to make of him. My drawing is much less charming than the model, of course."},
+{fr:"J'ai dit : « Mais… qu'est-ce que tu fais là ? » Et il m'a répondu tout doucement, comme une chose très sérieuse : « S'il vous plaît… dessine-moi un mouton… »",en:"I said: 'But… what are you doing here?' And he answered very gently, as though it were a most serious matter: 'Please… draw me a sheep…'"},
+{fr:"Quand le mystère est trop impressionnant, on n'ose pas désobéir. Aussi absurde que cela me semblât, à mille milles de tout endroit habité et en danger de mort, je sortis de ma poche une feuille de papier et un stylo.",en:"When the mystery is too overwhelming, one dares not disobey. Absurd as it seemed — a thousand miles from any habitation and in danger of death — I took a sheet of paper and a pen from my pocket."},
+{fr:"Mais je me rappelai que j'avais surtout appris la géographie, l'histoire, le calcul et la grammaire et je dis au petit bonhomme, avec un peu de mauvaise humeur, que je ne savais pas dessiner. Il me répondit : « Ça ne fait rien. Dessine-moi un mouton. »",en:"But I recalled that I had mainly learned geography, history, arithmetic and grammar, and I told the little fellow, somewhat grumpily, that I couldn't draw. He replied: 'That doesn't matter. Draw me a sheep.'"}
+]},
+{title:"Chapitre III",subtitle:"D'où venait-il ?",paras:[
+{fr:"Il me fallut longtemps pour apprendre d'où il venait. Le petit prince, qui me posait beaucoup de questions, ne semblait jamais entendre les miennes. Ce sont des mots prononcés par hasard qui, peu à peu, m'ont tout révélé.",en:"It took me a long time to understand where he came from. The little prince, who asked me many questions, never seemed to hear mine. It was words spoken by chance that, little by little, revealed everything to me."},
+{fr:"Ainsi, quand il aperçut pour la première fois mon avion, il me demanda : « Qu'est-ce que c'est que cette chose-là ? — Ce n'est pas une chose. Ça vole. C'est un avion. C'est mon avion. » Et j'étais fier de lui apprendre que je volais.",en:"So when he first caught sight of my airplane, he asked: 'What is that thing?' 'That's not a thing. It flies. It's an airplane. My airplane.' And I was proud to let him know I could fly."},
+{fr:"Il s'écria alors : « Comment ! tu es tombé du ciel ? — Oui, fis-je modestement. — Ah ! ça c'est drôle… » Et le petit prince eut un très joli éclat de rire qui m'irrita beaucoup.",en:"He cried: 'What! You fell from the sky?' 'Yes,' I said modestly. 'Oh! That's funny!' And the little prince broke into a lovely peal of laughter, which irritated me greatly."},
+{fr:"Je désire que l'on prenne mes malheurs au sérieux. Puis il ajouta : « Alors, toi aussi tu viens du ciel ! De quelle planète es-tu ? »",en:"I want my troubles taken seriously. Then he added: 'So you come from the sky too! Which planet are you from?'"},
+{fr:"J'entrevis aussitôt une lueur, dans le mystère de sa présence ici, et je questionnai brusquement : « Tu viens donc d'une autre planète ? » Mais il ne me répondit pas. Il hochait la tête doucement tout en regardant mon avion.",en:"I caught a glimpse of light in the mystery of his presence, and pressed: 'So you come from another planet?' But he didn't answer. He was nodding gently while looking at my airplane."},
+{fr:"« C'est vrai que, là-dessus, tu ne peux pas venir de bien loin… » Il alla très loin dans sa rêverie. Pendant de longues semaines j'eus ainsi à m'en sortir avec les péripéties d'une planète, d'un numéro, d'un astéroïde B 612.",en:"'It's true you can't have come very far from…' He drifted deep into his daydream. For long weeks I had to contend with hints about a planet, a number, an asteroid — B 612."}
+]},
+{title:"Chapitre IV",subtitle:"L'astéroïde B 612",paras:[
+{fr:"Je sais ainsi une chose sur la planète du petit prince. C'est qu'elle était à peine plus grande qu'une maison ! Ça ne pouvait pas m'étonner beaucoup. Je savais très bien qu'en dehors des grosses planètes comme la Terre, Jupiter, Mars, Vénus, auxquelles on a donné des noms, il y en a des centaines d'autres qui sont quelquefois si petites qu'on a beaucoup de mal à les apercevoir au télescope.",en:"I know one thing about the little prince's planet: it was barely bigger than a house! That did not surprise me much. I knew very well that besides the large planets like Earth, Jupiter, Mars and Venus, there are hundreds of others, sometimes so small they are very hard to see through a telescope."},
+{fr:"Quand un astronome découvre l'une d'elles, il lui donne pour nom un numéro. Il l'appelle par exemple : « l'astéroïde 3251 ».",en:"When an astronomer discovers one, he gives it a number for a name. He calls it, for instance, 'Asteroid 3251.'"},
+{fr:"J'ai de sérieuses raisons de croire que la planète d'où venait le petit prince est l'astéroïde B 612. Cet astéroïde n'a été aperçu qu'une fois au télescope, en 1909, par un astronome turc.",en:"I have good reason to believe the little prince's planet is Asteroid B 612. This asteroid has been seen through a telescope only once, in 1909, by a Turkish astronomer."},
+{fr:"Il avait fait alors une grande démonstration de sa découverte à un Congrès International d'Astronomie. Mais personne ne l'avait cru à cause de son costume. Les grandes personnes sont comme ça.",en:"He made a great demonstration of his discovery at an International Astronomy Congress. But no one believed him because of his costume. Grown-ups are like that."},
+{fr:"Heureusement pour la réputation de l'astéroïde B 612, un dictateur turc imposa à son peuple, sous peine de mort, de s'habiller à l'Européenne. L'astronome refit sa démonstration en 1920, dans un habit très élégant. Et cette fois-ci tout le monde fut de son avis.",en:"Fortunately for the reputation of Asteroid B 612, a Turkish dictator ordered his people, on pain of death, to dress in European style. The astronomer repeated his demonstration in 1920 in a very elegant suit. This time everybody accepted his findings."},
+{fr:"Si je vous ai raconté ces détails sur l'astéroïde B 612 et si je vous ai confié son numéro, c'est à cause des grandes personnes. Les grandes personnes aiment les chiffres. Quand vous leur parlez d'un nouvel ami, elles ne vous questionnent jamais sur l'essentiel.",en:"I have told you these details about Asteroid B 612 and confided its number because of grown-ups. Grown-ups love numbers. When you tell them about a new friend, they never ask about what matters most."},
+{fr:"Elles ne demandent jamais : « Quel est le son de sa voix ? Quels sont les jeux qu'il préfère ? Est-ce qu'il collectionne les papillons ? » Elles vous demandent : « Quel âge a-t-il ? Combien a-t-il de frères ? Combien pèse-t-il ? Combien gagne son père ? »",en:"They never ask: 'What does his voice sound like? What games does he like? Does he collect butterflies?' Instead they ask: 'How old is he? How many brothers does he have? How much does he weigh? How much does his father earn?'"},
+{fr:"C'est ainsi que j'ai vieilli. J'aurais aimé commencer cette histoire à la façon des contes de fées. Mais personne ne lit les contes de fées pour de vrai. Il me faut donc une introduction plus sérieuse.",en:"That is how I have grown old. I would have liked to begin this story like a fairy tale. But no one reads fairy tales for real. So I need a more serious introduction."}
+]},
+{title:"Chapitre V",subtitle:"Les baobabs",paras:[
+{fr:"Chaque jour j'apprenais quelque chose sur la planète, sur le départ, sur le voyage. Ça venait tout doucement, au hasard des réflexions. C'est ainsi que, le troisième jour, je connus le drame des baobabs.",en:"Each day I learned something about the planet, the departure, the journey. It came gradually, by chance, in the course of reflections. It was thus that, on the third day, I learned of the drama of the baobabs."},
+{fr:"Cette fois-ci encore ce fut grâce au mouton, car brusquement le petit prince m'interrogea, comme saisi d'un doute grave : « C'est bien vrai, n'est-ce pas, que les moutons mangent les arbustes ? — Oui. C'est vrai. — Ah ! Je suis content. »",en:"This time again it was thanks to the sheep. The little prince asked me, suddenly seized by a grave doubt: 'It's quite true, isn't it, that sheep eat shrubs?' 'Yes. That's true.' 'Ah! I'm glad.'"},
+{fr:"Je ne compris pas pourquoi il était si important que les moutons mangeassent les arbustes. Mais le petit prince ajouta : « Alors ils mangent aussi les baobabs ? »",en:"I didn't understand why it was so important that sheep eat shrubs. But the little prince added: 'Then they also eat baobabs?'"},
+{fr:"Je fis remarquer au petit prince que les baobabs ne sont pas des arbustes, mais des arbres grands comme des églises et que, si même il emportait avec lui tout un troupeau d'éléphants, ce troupeau ne viendrait pas à bout d'un seul baobab.",en:"I pointed out to the little prince that baobabs are not shrubs but trees as large as churches, and that even if he took along a whole herd of elephants, they could not finish off a single baobab."},
+{fr:"L'idée du troupeau d'éléphants fit rire le petit prince : « Il faudrait les mettre les uns sur les autres… » Mais il remarqua avec sagesse : « Les baobabs, avant de grandir, ça commence par être petit. »",en:"The idea of a herd of elephants made the little prince laugh: 'They'd have to be stacked on top of each other…' But he observed wisely: 'Before baobabs grow large, they start out small.'"},
+{fr:"Sur la planète du petit prince il y avait, comme sur toutes les planètes, de bonnes herbes et de mauvaises herbes. Mais les graines sont invisibles. Elles dorment dans le secret de la terre jusqu'à ce qu'il prenne fantaisie à l'une d'elles de se réveiller.",en:"On the little prince's planet there were, as on all planets, good plants and bad plants. But seeds are invisible. They sleep in the secrecy of the earth until one of them decides to wake."},
+{fr:"S'il s'agit d'un baobab, il faut s'en débarrasser tout de suite, dès qu'on peut le distinguer d'une plante de rose. C'est un travail très ennuyeux, mais très facile.",en:"If it is a baobab, one must rid oneself of it at once, as soon as it can be told apart from a rose plant. It is very tedious work, but very easy."}
+]},
+{title:"Chapitre VI",subtitle:"Les couchers de soleil",paras:[
+{fr:"Ah ! petit prince, j'ai compris, peu à peu, ainsi, ta petite vie mélancolique. Tu n'avais eu longtemps pour distraction que la douceur des couchers de soleil.",en:"Ah, little prince! Little by little I came to understand your quiet, melancholy life. For a long time your only entertainment had been the gentle pleasure of sunsets."},
+{fr:"J'appris ce détail nouveau, le quatrième jour matin, quand tu me dis : « J'aime bien les couchers de soleil. Allons voir un coucher de soleil… — Mais il faut attendre… — Attendre quoi ? — Attendre que le soleil se couche. »",en:"I learned this new detail on the fourth morning, when you said: 'I am very fond of sunsets. Let's go watch a sunset.' 'But we must wait.' 'Wait for what?' 'Wait for the sun to set.'"},
+{fr:"Tu avais l'air très surpris d'abord, et puis tu avais ri de toi-même. Et tu m'avais dit : « Je me crois toujours chez moi ! »",en:"You looked very surprised at first, and then laughed at yourself. And you said: 'I keep thinking I'm at home!'"},
+{fr:"Mais, sur ta toute petite planète, il te suffisait de tirer ta chaise de quelques pas. Et tu regardais le crépuscule chaque fois que tu en avais envie… « Un jour, j'ai vu le soleil se coucher quarante-quatre fois ! »",en:"But on your tiny planet, you only had to move your chair a few steps. And you watched the twilight whenever you wished… 'One day I watched the sun set forty-four times!'"},
+{fr:"Et un peu plus tard tu ajoutais : « Tu sais… quand on est tellement triste on aime les couchers de soleil. — Le jour des quarante-quatre fois, tu étais donc tellement triste ? » Mais le petit prince ne répondit pas.",en:"And a little later you added: 'You know… when one is so very sad, one loves sunsets.' 'The day of the forty-four, were you then so very sad?' But the little prince did not answer."}
+]},
+{title:"Chapitre VII",subtitle:"La rose et le mouton",paras:[
+{fr:"Le cinquième jour, toujours grâce au mouton, ce secret de la vie du petit prince me fut révélé. Il me demanda à l'improviste : « Un mouton, s'il mange les arbustes, il mange aussi les fleurs ? »",en:"On the fifth day — again, thanks to the sheep — the secret of the little prince's life was revealed to me. He asked me abruptly: 'A sheep — if it eats shrubs, does it eat flowers too?'"},
+{fr:"« Un mouton mange tout ce qu'il rencontre. — Même les fleurs qui ont des épines ? — Oui. Même les fleurs qui ont des épines. — Alors les épines, à quoi ça sert ? »",en:"'A sheep eats everything it comes across.' 'Even flowers with thorns?' 'Yes. Even flowers with thorns.' 'Then what good are the thorns?'"},
+{fr:"Je n'avais pas de temps à perdre avec un boulon et une question de mouton. Mais le petit prince n'abandonnait jamais une question une fois qu'il l'avait posée.",en:"I had no time to waste on a bolt and a question about sheep. But the little prince never abandoned a question once he had asked it."},
+{fr:"« Tu n'as rien à faire ? — Mais je suis sérieux, moi ! J'essaie de réparer mon avion ! — Tu parles comme les grandes personnes ! »",en:"'You haven't anything to do?' 'But I am busy with something important! I'm trying to fix my airplane!' 'You talk just like the grown-ups!'"},
+{fr:"« Je connais une planète où il y a un Monsieur cramoisi. Il n'a jamais respiré une fleur. Il n'a jamais regardé une étoile. Il n'a jamais aimé personne. Il n'a jamais rien fait d'autre que des additions. Et ça le fait gonfler d'orgueil. Mais ce n'est pas un homme — c'est un champignon ! »",en:"'I know a planet where there is a crimson-faced gentleman. He has never smelled a flower. He has never looked at a star. He has never loved anyone. He has never done anything but add up figures, and it swells him with pride. But he is not a man — he is a mushroom!'"}
+]},
+{title:"Chapitre VIII",subtitle:"La rose",paras:[
+{fr:"Mais un matin, une graine, d'on ne sait où venue, avait germé. Et le petit prince avait surveillé de très près cette brindille qui ne ressemblait pas aux autres brindilles.",en:"But one morning, a seed from nowhere had germinated. The little prince watched very closely this tiny shoot which didn't look like the others."},
+{fr:"L'arbuste cessa vite de croître, et commença de préparer une fleur. Le petit prince assistait à l'éclosion d'un bouton énorme. La fleur n'en finissait pas de se préparer à être belle.",en:"The shrub soon stopped growing and began to prepare a flower. The little prince watched the appearance of a huge bud. The flower took endless time preparing to be beautiful."},
+{fr:"Elle achevait sa toilette avec soin. Elle s'habillait lentement, elle ajustait un à un ses pétales. Elle ne voulait apparaître que dans le plein rayonnement de sa beauté.",en:"She arranged herself with great care. She dressed slowly, adjusting her petals one by one. She wanted to appear only in the full radiance of her beauty."},
+{fr:"La fleur dit alors : « Ah ! je me réveille à peine… Je vous demande pardon… Je suis encore toute décoiffée… » Le petit prince ne put alors contenir son admiration : « Que vous êtes belle ! »",en:"The flower said: 'Ah, I have barely woken… I beg your pardon… I am still quite dishevelled.' The little prince could not hold back his admiration: 'How beautiful you are!'"},
+{fr:"Le petit prince avait pensé : 'Elle est bien compliquée et bien changeante.' Mais il était trop jeune pour savoir l'aimer. Il prit alors au sérieux les paroles de la fleur et devint très malheureux.",en:"The little prince had thought: 'She is very complicated and very inconsistent.' But he was too young to know how to love her. He took the flower's words too seriously and became very unhappy."}
+]},
+{title:"Chapitre IX",subtitle:"Le départ",paras:[
+{fr:"Je crois qu'il profita, pour s'évader, d'une migration d'oiseaux sauvages. Au matin du départ il mit sa planète bien en ordre. Il ramona soigneusement ses volcans en activité.",en:"I believe he took advantage of a migration of wild birds for his escape. On the morning of his departure he put his planet in perfect order. He carefully swept out his active volcanoes."},
+{fr:"Il se mit aussi à déraciner, avec un peu de mélancolie, les dernières pousses de baobabs. Il croyait ne jamais devoir revenir.",en:"He also set to uprooting, with some sadness, the last baobab shoots. He believed he would never return."},
+{fr:"Et quand il arrosa une dernière fois la fleur et se prépara à la mettre à l'abri sous son globe, il se découvrit l'envie de pleurer.",en:"And when he watered the flower one last time and prepared to shelter her under her glass globe, he felt an urge to cry."},
+{fr:"« Bien sûr que je t'aime, lui dit la fleur. C'est ma faute si tu ne l'as pas su. Cela n'a aucune importance. Mais tu as été aussi sot que moi. Tâche d'être heureux… Laisse ce globe tranquille. Je n'en veux plus. »",en:"'Of course I love you,' said the flower. 'It is my fault that you did not know. That doesn't matter. But you were as foolish as I was. Try to be happy… Leave the glass globe alone. I don't want it any more.'"}
+]},
+{title:"Chapitre X",subtitle:"Le roi",paras:[
+{fr:"La première était habitée par un roi. Le roi siégeait, habillé de pourpre et d'hermine, sur un trône très simple et cependant majestueux.",en:"The first was inhabited by a king. The king sat, dressed in purple and ermine, on a very simple and yet majestic throne."},
+{fr:"« Ah ! Voilà un sujet », s'écria le roi quand il aperçut le petit prince.",en:"'Ah! Here is a subject!' cried the king when he caught sight of the little prince."},
+{fr:"« Il est contraire à l'étiquette de bâiller en présence d'un roi. Je te l'interdis. — Je ne peux pas m'en empêcher. J'ai fait un long voyage et je n'ai pas dormi… »",en:"'It is contrary to etiquette to yawn in the presence of a king. I forbid it.' 'I cannot help it. I have made a long journey and have not slept...'"},
+{fr:"« Alors, je t'ordonne de bâiller. Je n'ai vu personne bâiller depuis des années. Les bâillements sont pour moi des curiosités. Allons ! bâille encore. C'est un ordre. »",en:"'Then I command you to yawn. I haven't seen anyone yawn for years. Yawns are a curiosity to me. Come! Yawn again. That is an order.'"},
+{fr:"Un roi doit s'assurer que ses ordres sont raisonnables, afin de pouvoir être obéis.",en:"A king must ensure his orders are reasonable, so that they can actually be obeyed."}
+]},
+{title:"Chapitre XI",subtitle:"Le vaniteux",paras:[
+{fr:"La seconde planète était habitée par un vaniteux. « Ah ! Ah ! Voilà la visite d'un admirateur ! » s'écria de loin le vaniteux dès qu'il aperçut le petit prince.",en:"The second planet was inhabited by a conceited man. 'Ah! Ah! Here comes an admirer!' cried the conceited man from afar as soon as he caught sight of the little prince."},
+{fr:"« Frappe tes mains l'une contre l'autre », conseilla donc le vaniteux. Le petit prince frappa ses mains l'une contre l'autre. Le vaniteux souleva modestement son chapeau et salua.",en:"'Clap your hands together,' the conceited man suggested. The little prince clapped his hands. The conceited man modestly raised his hat and bowed."},
+{fr:"« Est-ce que tu m'admires vraiment beaucoup ? — Que signifie admirer ? — Admirer signifie reconnaître que je suis l'homme le plus beau, le mieux habillé, le plus riche et le plus intelligent de la planète. »",en:"'Do you really admire me very much?' 'What does admire mean?' 'Admire means to recognise that I am the most handsome, the best dressed, the richest and the most intelligent man on the planet.'"}
+]},
+{title:"Chapitre XII",subtitle:"Le buveur",paras:[
+{fr:"La planète suivante était habitée par un buveur. Cette visite fut très courte, mais elle plongea le petit prince dans une grande mélancolie.",en:"The next planet was inhabited by a tippler. This visit was very brief, but it plunged the little prince into deep melancholy."},
+{fr:"« Que fais-tu là ? — Je bois. — Pourquoi bois-tu ? — Pour oublier. — Pour oublier quoi ? — Pour oublier que j'ai honte. — Honte de quoi ? — Honte de boire ! »",en:"'What are you doing there?' 'I am drinking.' 'Why are you drinking?' 'To forget.' 'To forget what?' 'To forget that I am ashamed.' 'Ashamed of what?' 'Ashamed of drinking!'"},
+{fr:"Et le petit prince s'en alla, perplexe. Les grandes personnes sont décidément très très bizarres, se disait-il en lui-même durant le voyage.",en:"And the little prince went away, perplexed. 'Grown-ups are certainly very, very strange,' he said to himself as he continued his journey."}
+]},
+{title:"Chapitre XIII",subtitle:"Le businessman",paras:[
+{fr:"La quatrième planète était celle du businessman. Cet homme était si occupé qu'il ne leva même pas la tête à l'arrivée du petit prince.",en:"The fourth planet was the businessman's. This man was so busy he did not even raise his head when the little prince arrived."},
+{fr:"— De quoi te préoccupes-tu ? dit le petit prince. — Je possède cinq-cent-un millions de ces petites choses que l'on voit quelquefois dans le ciel. — Des millions de quoi ? — De ces petites choses lumineuses.",en:"'What do you own?' said the little prince. 'I own five hundred and one million of those little things one sometimes sees in the sky.' 'Millions of what?' 'Of those little shining things.'"},
+{fr:"« Moi, dit le petit prince, si je possède une fleur, je puis cueillir ma fleur et l'emporter. Mais tu ne peux pas cueillir les étoiles ! »",en:"'If I own a flower,' said the little prince, 'I can pick it and take it. But you cannot pick the stars!'"},
+{fr:"Je ne sers à rien aux étoiles, dit le petit prince. C'est amusant comme vision de la vie, mais ce n'est pas une chose très sérieuse.",en:"'I am of no use to the stars,' said the little prince. 'That is an amusing way to look at things, but it is not a very serious matter.'"}
+]},
+{title:"Chapitre XIV",subtitle:"L'allumeur de réverbères",paras:[
+{fr:"La cinquième planète était très curieuse. C'était la plus petite de toutes. Il y avait là juste assez de place pour loger un réverbère et un allumeur de réverbères.",en:"The fifth planet was very curious. It was the smallest of all. There was just enough room on it for a street lamp and a lamplighter."},
+{fr:"L'allumeur de réverbères alluma son réverbère. Ma planète a tellement raccourci, avec les années, que ma planète fait un tour complet par minute. Je n'ai pas une seconde de repos.",en:"The lamplighter lit his lamp. 'My planet has shrunk so much over the years that it now completes a full rotation every minute. I have not a second's rest.'"},
+{fr:"Le petit prince pensa que c'était le seul qui ne lui semblait pas ridicule. C'est peut-être parce qu'il s'occupait d'autre chose que de lui-même.",en:"The little prince thought this was the only one who did not seem ridiculous. Perhaps that was because he occupied himself with something other than himself."}
+]},
+{title:"Chapitre XV",subtitle:"Le géographe",paras:[
+{fr:"La sixième planète était une planète dix fois plus vaste. Elle était habitée par un vieux Monsieur qui écrivait d'énormes livres.",en:"The sixth planet was ten times larger. It was inhabited by an old gentleman who wrote enormous books."},
+{fr:"« Tiens ! voilà un explorateur ! » s'écria-t-il quand il aperçut le petit prince.",en:"'Ah! Here is an explorer!' he exclaimed when he caught sight of the little prince."},
+{fr:"Un géographe est un savant qui connaît où se trouvent les mers, les fleuves, les villes, les montagnes et les déserts.",en:"'A geographer is a scholar who knows the location of all the seas, rivers, towns, mountains and deserts.'"},
+{fr:"— Votre planète est-elle belle ? — Je ne peux pas le savoir, dit le géographe. Je ne suis pas explorateur. Je manque absolument d'explorateurs.",en:"'Is your planet beautiful?' 'I cannot know,' said the geographer. 'I am not an explorer. I have no explorers at all.'"},
+{fr:"— Et ta fleur ? dit le géographe. — Ma fleur ? — Les géographes ne notent pas les fleurs. Parce que les fleurs sont éphémères.",en:"'And your flower?' said the geographer. 'My flower?' 'Geographers do not note flowers. Because flowers are ephemeral.'"},
+{fr:"Le petit prince se dit : 'Ma fleur est éphémère, et elle n'a que quatre épines pour se défendre contre le monde, et je l'ai laissée seule !'",en:"The little prince said to himself: 'My flower is ephemeral, and she has only four thorns to defend herself against the world, and I have left her alone!'"}
+]},
+{title:"Chapitre XVI",subtitle:"La Terre",paras:[
+{fr:"La septième planète fut donc la Terre. La Terre n'est pas une planète quelconque ! On y compte cent onze rois, sept mille géographes, neuf-cent mille businessmen, sept millions et demi d'ivrognes, trois-cent onze millions de vaniteux, c'est-à-dire environ deux milliards de grandes personnes.",en:"The seventh planet was therefore Earth. Earth is not just any planet! One counts there a hundred and eleven kings, seven thousand geographers, nine hundred thousand businessmen, seven and a half million tipplers, three hundred and eleven million conceited men — in all, roughly two billion grown-ups."}
+]},
+{title:"Chapitre XVII",subtitle:"Le serpent",paras:[
+{fr:"Quand le petit prince arriva sur la Terre, il fut donc bien surpris de ne voir personne. Il avait déjà peur de s'être trompé de planète, quand un anneau couleur de lune remua dans le sable.",en:"When the little prince arrived on Earth he was therefore surprised to see nobody. He was already afraid of having come to the wrong planet, when a moon-coloured coil stirred in the sand."},
+{fr:"« Bonne nuit, dit le petit prince. — Bonne nuit, dit le serpent. — Sur quelle planète suis-je tombé ? — Sur la Terre, en Afrique. »",en:"'Good evening,' said the little prince. 'Good evening,' said the snake. 'On what planet have I fallen?' 'On Earth, in Africa.'"},
+{fr:"Le petit prince s'assit sur une pierre et leva les yeux vers le ciel. « Je me demande, dit-il, si les étoiles sont éclairées afin que chacun puisse un jour retrouver la sienne. »",en:"The little prince sat on a rock and raised his eyes toward the sky. 'I wonder,' he said, 'whether the stars are lit so that each one can someday find his own.'"}
+]},
+{title:"Chapitre XVIII",subtitle:"La fleur du désert",paras:[
+{fr:"Le petit prince traversa le désert et ne rencontra qu'une fleur. Une fleur à trois pétales, une fleur de rien du tout.",en:"The little prince crossed the desert and encountered only one flower. A flower of three petals, a flower of no significance at all."},
+{fr:"« Où sont les hommes ? demanda poliment le petit prince. — Les hommes ? Il en existe, je crois, six ou sept. Mais on ne sait jamais où les trouver. Le vent les promène. »",en:"'Where are the men?' asked the little prince politely. 'Men? There are six or seven, I believe. But one never knows where to find them. The wind blows them about.'"}
+]},
+{title:"Chapitre XIX",subtitle:"La montagne",paras:[
+{fr:"Le petit prince fit l'ascension d'une haute montagne. Il croyait apercevoir d'un coup toute la planète et tous les hommes. Mais il n'aperçut que des aiguilles de roc bien aiguisées.",en:"The little prince climbed a high mountain. He thought he would see the whole planet and all the people at once. But he saw nothing but needle-sharp peaks of rock."},
+{fr:"« Bonjour… Bonjour… Bonjour… répondit l'écho. — Qui êtes-vous ? dit le petit prince. — Qui êtes-vous… qui êtes-vous… qui êtes-vous… répondit l'écho. »",en:"'Good morning… Good morning… Good morning…' answered the echo. 'Who are you?' said the little prince. 'Who are you… who are you… who are you…' answered the echo."},
+{fr:"Quelle drôle de planète ! pensa-t-il alors. Elle est toute sèche, et toute pointue et toute salée. Et les hommes manquent d'imagination. Ils répètent ce qu'on leur dit…",en:"'What a strange planet!' he thought. 'It is all dry and all pointed and all harsh. And the men have no imagination. They repeat whatever one says to them...'"}
+]},
+{title:"Chapitre XX",subtitle:"Le jardin de roses",paras:[
+{fr:"Mais il arriva que le petit prince, ayant longtemps marché à travers les sables, les rocs et les neiges, découvrit enfin une route. Et les routes vont toutes chez les hommes.",en:"It happened that the little prince, having walked for a long time through sand, rocks and snow, at last discovered a road. And roads all lead to men."},
+{fr:"C'était un jardin fleuri de roses. « Qui êtes-vous ? leur demanda-t-il, stupéfait. — Nous sommes des roses, dirent les roses. » Et il se sentit très malheureux.",en:"It was a garden all in bloom with roses. 'Who are you?' he asked, astounded. 'We are roses,' said the roses. And he felt very unhappy."},
+{fr:"Sa fleur lui avait raconté qu'elle était seule de son espèce dans l'univers. Et voici qu'il en était cinq mille, toutes semblables, dans un seul jardin !",en:"His flower had told him she was the only one of her kind in all the universe. And here were five thousand of them, all just alike, in a single garden!"}
+]},
+{title:"Chapitre XXI",subtitle:"Le renard",paras:[
+{fr:"C'est alors qu'apparut le renard. « Bonjour, dit le renard. — Bonjour, répondit poliment le petit prince, qui se retourna mais ne vit rien. — Je suis là, dit la voix, sous le pommier… »",en:"Then the fox appeared. 'Good morning,' said the fox. 'Good morning,' the little prince replied politely, turning around but seeing nothing. 'I am here,' the voice said, 'under the apple tree.'"},
+{fr:"« Viens jouer avec moi, lui proposa le petit prince. Je suis tellement triste… — Je ne puis pas jouer avec toi, dit le renard. Je ne suis pas apprivoisé. »",en:"'Come and play with me,' the little prince proposed. 'I am so sad.' 'I cannot play with you,' the fox said. 'I am not tamed.'"},
+{fr:"« Ça signifie « créer des liens… » Tu n'es encore pour moi qu'un petit garçon tout semblable à cent mille petits garçons. Et je n'ai pas besoin de toi. Mais si tu m'apprivoises, nous aurons besoin l'un de l'autre. Tu seras pour moi unique au monde. Je serai pour toi unique au monde.",en:"'It means to establish ties. To me, you are still nothing more than a little boy like a hundred thousand other little boys. But if you tame me, we shall need each other. You will be unique in all the world to me. I shall be unique in all the world to you.'"},
+{fr:"Ma vie est monotone. Je chasse les poules, les hommes me chassent. Toutes les poules se ressemblent, et tous les hommes se ressemblent. Mais si tu m'apprivoises, ma vie sera comme ensoleillée.",en:"'My life is monotonous. I hunt chickens; men hunt me. All the chickens are just alike, and all the men are just alike. But if you tame me, my life will be as if filled with sunshine.'"},
+{fr:"Puis vint le moment des adieux. « Ah ! dit le renard… Je pleurerai. »",en:"Then came the moment of farewells. 'Ah!' said the fox. 'I shall cry.'"},
+{fr:"— Ça m'a fait du bien, dit le renard, à cause de la couleur du blé. Va revoir les roses. Tu comprendras que la tienne est unique au monde. Tu reviendras me dire adieu, et je te ferai cadeau d'un secret.",en:"'It has done me good,' said the fox, 'because of the colour of the wheat. Go and look again at the roses. You will understand now that yours is unique in all the world. Then come back to say goodbye to me, and I will make you a present of a secret.'"},
+{fr:"« Voici mon secret. Il est très simple : on ne voit bien qu'avec le cœur. L'essentiel est invisible pour les yeux. »",en:"'And now here is my secret, a very simple secret: It is only with the heart that one can see rightly; what is essential is invisible to the eye.'"},
+{fr:"« C'est le temps que tu as perdu pour ta rose qui fait ta rose si importante. » « Les hommes ont oublié cette vérité. Mais tu ne dois pas l'oublier. Tu deviens responsable pour toujours de ce que tu as apprivoisé. Tu es responsable de ta rose… »",en:"'It is the time you have spent on your rose that makes your rose so important. Men have forgotten this truth. But you must not forget it. You become responsible, forever, for what you have tamed. You are responsible for your rose...'"}
+]},
+{title:"Chapitre XXII",subtitle:"L'aiguilleur",paras:[
+{fr:"« Je trie les voyageurs, par paquets de mille. Je les expédie tantôt vers la droite, tantôt vers la gauche. »",en:"'I sort out travellers, in bundles of a thousand. I dispatch them sometimes to the right, sometimes to the left.'"},
+{fr:"« Ils sont bien pressés, dit le petit prince. Que cherchent-ils ? — L'homme de la locomotive l'ignore lui-même. »",en:"'They are in a great hurry,' said the little prince. 'What are they looking for?' 'Even the man at the locomotive does not know that.'"},
+{fr:"« Les seuls qui sachent ce qu'ils cherchent, dit l'aiguilleur, ce sont les enfants. Ils perdent du temps pour une poupée de chiffons, et elle devient très importante, et si on la leur enlève, ils pleurent… »",en:"'Only the children know what they are looking for,' said the switchman. 'They waste their time over a rag doll and it becomes very important to them; and if anybody takes it away from them, they cry...'"}
+]},
+{title:"Chapitre XXIII",subtitle:"Le marchand",paras:[
+{fr:"Il vendait des pilules perfectionnées qui apaisaient la soif. On en avalait une par semaine et l'on n'éprouvait plus le besoin de boire.",en:"He sold pills that quenched thirst. Swallow one a week, and you would feel no need to drink."},
+{fr:"— Et que fait-on de ces cinquante-trois minutes ? — On en fait ce qu'on veut… — Moi, dit le petit prince, si j'avais cinquante-trois minutes à dépenser, je marcherais tout doucement vers une fontaine…",en:"'And what do people do with those fifty-three minutes?' 'Anything they choose...' 'As for me,' said the little prince, 'if I had fifty-three minutes to spend as I liked, I should walk at my leisure toward a spring of fresh water.'"}
+]},
+{title:"Chapitre XXIV",subtitle:"Le puits dans le désert",paras:[
+{fr:"C'était donc le huitième jour de ma panne, et j'avais écouté cette histoire du marchand en buvant la dernière goutte de ma provision d'eau.",en:"So it was the eighth day of my breakdown, and I had listened to the story of the merchant while drinking the last drop of my water supply."},
+{fr:"Le petit prince s'endormit. Je le pris dans mes bras, et repartis en marchant. Il me semblait porter un trésor fragile. Il me semblait même qu'il n'y avait rien de plus fragile sur la Terre.",en:"The little prince fell asleep. I took him in my arms and set out walking again. It seemed to me that I was carrying a fragile treasure. It seemed, indeed, that there was nothing more fragile on all the Earth."},
+{fr:"« Ce n'est pas la peine. » Le puits que nous avions atteint ne ressemblait pas aux puits du Sahara. Il ressemblait à un puits de village.",en:"'It is not worth the trouble.' The well we had reached was not like the wells of the Sahara. It was like a village well."},
+{fr:"« Tu as soif. Bois donc. » Ce qui était beau dans ce puits, c'était qu'il chantait.",en:"'You are thirsty. Drink,' he said. What was beautiful about this well was that it sang."},
+{fr:"« Ce que tu as cherché si loin, dit le petit prince, ça valait mieux le chercher dans un seul homme. »",en:"'What you have looked for so far away,' said the little prince, 'it would have been better found in one man.'"}
+]},
+{title:"Chapitre XXV",subtitle:"L'anniversaire",paras:[
+{fr:"« Les hommes chez toi cultivent cinq mille roses dans un même jardin… et ils n'y trouvent pas ce qu'ils cherchent… Et cependant ce qu'ils cherchent pourrait être trouvé dans une seule rose ou un peu d'eau… »",en:"'The men where you live raise five thousand roses in the same garden and they do not find in it what they are looking for... And yet what they are looking for could be found in one single rose, or in a little water.'"},
+{fr:"Et le petit prince ajouta : « Mais les yeux sont aveugles. Il faut chercher avec le cœur. »",en:"And the little prince added: 'But the eyes are blind. One must look with the heart.'"},
+{fr:"« Il faut que tu tiennes ta promesse… une muselière pour mon mouton… je suis responsable de cette fleur ! »",en:"'You must keep your promise... a muzzle for my sheep... I am responsible for this flower!'"}
+]},
+{title:"Chapitre XXVI",subtitle:"Le retour",paras:[
+{fr:"Il y avait, à côté du puits, une vieille muraille de pierres en ruine, et quand je revins de mon travail, le soir, j'aperçus de loin mon petit prince assis là-haut, les jambes pendantes.",en:"Near the well there was the ruin of an old stone wall. When I came back from my work in the evening, I saw from some distance away my little prince sitting on top of it, with his legs dangling."},
+{fr:"Il n'y eut qu'un éclair jaune près de sa cheville. Il demeura un instant immobile. Il ne cria pas. Il tomba doucement comme tombe un arbre. Ça ne fit même pas de bruit, à cause du sable.",en:"There was nothing but a flash of yellow close to his ankle. He remained motionless for an instant. He did not cry out. He fell as gently as a tree falls. There was not even any sound, because of the sand."},
+{fr:"« Ce qui est important, ça ne se voit pas… C'est comme pour la fleur. Si tu aimes une fleur qui se trouve dans une étoile, c'est doux, la nuit, de regarder le ciel. Toutes les étoiles sont fleuries. »",en:"'What is important is invisible... It is just as it is with the flower. If you love a flower that lives on a star, it is sweet to look at the sky at night. All the stars are a-bloom with flowers.'"},
+{fr:"« La nuit, tu regarderas les étoiles. Mon étoile, ça sera pour toi une des étoiles. Alors, toutes les étoiles, tu aimeras les regarder… »",en:"'At night you will look up at the stars. My star will just be one of the stars, for you. And so you will love to watch all the stars in the heavens...'"},
+{fr:"Et je compris que je ne supportais pas l'idée de ne plus jamais entendre ce rire. C'était pour moi comme une fontaine dans le désert.",en:"And I understood that I could not bear the thought of never hearing that laughter any more. For me, it was like a spring of water in the desert."}
+]},
+{title:"Chapitre XXVII",subtitle:"Épilogue",paras:[
+{fr:"Et maintenant six ans ont passé déjà… Je n'ai jamais encore raconté cette histoire. J'étais triste mais je leur disais : « C'est la fatigue… »",en:"And now six years have already gone by... I have never yet told this story. I was sad, but I told them: 'I am tired...'"},
+{fr:"Maintenant je me suis un peu consolé. Je sais bien qu'il est revenu à sa planète, car, au lever du jour, je n'ai pas retrouvé son corps.",en:"Now I am a little consoled. I know that he did go back to his planet, because at daybreak I did not find his body."},
+{fr:"Et la nuit, j'aime à écouter les étoiles. C'est comme cinq-cent millions de grelots.",en:"And at night I love to listen to the stars. It is like five hundred million little bells."},
+{fr:"Alors je me demande : que s'est-il passé sur sa planète ? Peut-être bien que le mouton a mangé la fleur… Tantôt je me dis : « Sûrement non ! » Alors je suis heureux. Et toutes les étoiles rient doucement.",en:"So I keep wondering: what has happened on his planet? Perhaps the sheep has eaten the flower... Sometimes I tell myself: 'Surely not!' Then I am happy. And all the stars laugh softly."},
+{fr:"C'est là un grand mystère. Pour vous qui aimez aussi le petit prince, rien dans l'univers ne peut être pareil si quelque part, on ne sait où, un mouton que nous ne connaissons pas a, oui ou non, mangé une rose…",en:"This is, to me, the greatest mystery. For you who love the little prince, as for me, nothing in the universe can be the same if somewhere, we do not know where, a sheep that we have never seen has — yes or no — eaten a rose..."},
+{fr:"Regardez attentivement ce paysage afin d'être sûrs de le reconnaître, si vous voyagez un jour en Afrique, dans le désert. Et, s'il vous arrive de passer par là, je vous en supplie, ne vous pressez pas, attendez un peu, juste sous l'étoile !",en:"Look at this landscape carefully so that you will be sure to recognize it if you travel some day to the African desert. And if you should come upon this spot, please do not hurry on. Wait for a time, exactly under the star. Then, if a little man appears who laughs, who has golden hair, you will know who he is."}
+]}
+];
+
+let voices=[],curCh=0,activeIdx=-1,readingAll=false;
+
+function loadVoices(){
+  voices=speechSynthesis.getVoices().filter(v=>v.lang.startsWith('fr'));
+  const sel=document.getElementById('voiceSelect');
+  if(!voices.length){sel.innerHTML='<option>No French voices found</option>';return;}
+  sel.innerHTML=voices.map((v,i)=>`<option value="${i}">${v.name} (${v.lang})</option>`).join('');
+  const pref=voices.findIndex(v=>/(amelie|thomas|marie|aurelie|juliette)/i.test(v.name)||v.lang==='fr-FR');
+  if(pref>=0)sel.value=pref;
+}
+speechSynthesis.onvoiceschanged=loadVoices;
+loadVoices();
+
+document.getElementById('rateSlider').addEventListener('input',function(){
+  document.getElementById('rateVal').textContent=parseFloat(this.value).toFixed(1)+'×';
+});
+
+function getVoice(){const sel=document.getElementById('voiceSelect');return voices[parseInt(sel.value)]||voices[0]||null;}
+function getRate(){return parseFloat(document.getElementById('rateSlider').value);}
+
+function setActive(idx){
+  document.querySelectorAll('.para-row').forEach((r,i)=>{
+    r.classList.toggle('playing',i===idx);
+    const b=r.querySelector('.pbtn');
+    if(b){b.classList.toggle('active',i===idx);b.textContent=i===idx?'■':'▶';}
+  });
+  activeIdx=idx;
+}
+function clearActive(){
+  document.querySelectorAll('.para-row').forEach(r=>{
+    r.classList.remove('playing');
+    const b=r.querySelector('.pbtn');
+    if(b){b.classList.remove('active');b.textContent='▶';}
+  });
+  activeIdx=-1;
+}
+
+function speakPara(idx,onEnd){
+  speechSynthesis.cancel();setActive(idx);
+  const u=new SpeechSynthesisUtterance(chapters[curCh].paras[idx].fr);
+  u.voice=getVoice();u.lang='fr-FR';u.rate=getRate();
+  u.onend=()=>{if(onEnd)onEnd();};
+  u.onerror=()=>{clearActive();};
+  speechSynthesis.speak(u);
+}
+
+function stopAll(){
+  speechSynthesis.cancel();readingAll=false;clearActive();
+  const b=document.getElementById('readAllBtn');
+  b.textContent='▶ Read aloud';b.className='ctrl-btn go';
+}
+
+function readAll(){
+  if(readingAll){stopAll();return;}
+  readingAll=true;
+  const b=document.getElementById('readAllBtn');
+  b.textContent='■ Stop';b.className='ctrl-btn';
+  let idx=0;
+  function next(){
+    if(!readingAll||idx>=chapters[curCh].paras.length){
+      readingAll=false;clearActive();
+      b.textContent='▶ Read aloud';b.className='ctrl-btn go';return;
+    }
+    speakPara(idx++,next);
+  }
+  next();
+}
+
+function togglePara(i){
+  if(activeIdx===i){stopAll();return;}
+  readingAll=false;
+  const b=document.getElementById('readAllBtn');
+  b.textContent='▶ Read aloud';b.className='ctrl-btn go';
+  speakPara(i,()=>{if(!readingAll)clearActive();});
+}
+
+function buildSidebar(){
+  document.getElementById('sidebar').innerHTML=
+    chapters.map((c,i)=>`<button class="ch-btn${i===0?' active':''}" onclick="goChapter(${i})">${c.title}</button>`).join('');
+}
+
+function renderChapter(n){
+  stopAll();curCh=n;
+  const ch=chapters[n];
+  document.getElementById('chLabel').textContent=ch.title;
+  document.getElementById('chTitle').textContent=ch.subtitle;
+  document.getElementById('paras').innerHTML=ch.paras.map((p,i)=>`
+    <div class="para-row" onclick="togglePara(${i})">
+      <div class="fr-text"><button class="pbtn" onclick="event.stopPropagation();togglePara(${i})">▶</button><span>${p.fr}</span></div>
+      <div class="en-text">${p.en}</div>
+    </div>`).join('');
+  document.getElementById('prevBtn').style.opacity=n===0?'0.35':'1';
+  document.getElementById('nextBtn').style.opacity=n===chapters.length-1?'0.35':'1';
+  document.querySelectorAll('.ch-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+  document.getElementById('main').scrollTop=0;
+}
+
+function goChapter(n){
+  if(n<0||n>=chapters.length)return;
+  renderChapter(n);
+}
+
+buildSidebar();
+renderChapter(0);
+</script>
+</body>
+</html>
