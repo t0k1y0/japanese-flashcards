@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>L&#x27;économie de la religion · The Economics of Religion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:      #f6efdf;
+    --ink:        #2a2416;
+    --ink-soft:   #4a3f2a;
+    --muted:      #8a7a58;
+    --gold:       #a07b2c;
+    --rule:       #c9b993;
+    --accent:     #7a4a1f;
+    --shadow:     rgba(60,40,10,0.08);
+    --hover-bg:   rgba(160,123,44,0.08);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #fbf6e9 0%, transparent 60%),
+      radial-gradient(1000px 700px at 100% 20%, #efe6cd 0%, transparent 55%),
+      var(--paper);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Subtle paper grain */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    opacity: .5;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.2  0 0 0 0 0.16  0 0 0 0 0.08  0 0 0 0.05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+    z-index: 0;
+  }
+
+  header.masthead {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4rem clamp(1rem, 4vw, 3rem) 1.5rem;
+    text-align: center;
+  }
+  .kicker {
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: .4em;
+    text-transform: uppercase;
+    font-size: .72rem;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+  }
+  .kicker .dot { color: var(--gold); margin: 0 .6em; }
+
+  .titles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .titles h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: clamp(1.9rem, 4.2vw, 3.3rem);
+    line-height: 1.08;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: .005em;
+  }
+  .titles .fr h1 { font-style: italic; }
+  .titles .en h1 { font-style: normal; }
+  .titles p.subtitle {
+    margin: 1rem 0 0;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 1.08rem;
+    line-height: 1.5;
+  }
+
+  .byline-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+    max-width: 1400px;
+    margin: 2.5rem auto 0;
+    padding: 1.25rem clamp(1rem, 4vw, 3rem);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .byline {
+    text-align: center;
+  }
+  .byline .author {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    color: var(--accent);
+    letter-spacing: .08em;
+  }
+  .byline .date {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--muted);
+    font-size: .92rem;
+    margin-top: .15rem;
+  }
+
+  .column-labels {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 2rem auto 1.25rem;
+    padding: 0 clamp(1rem, 4vw, 3rem);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  .column-labels .lbl {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: .72rem;
+    letter-spacing: .42em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: .55rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .column-labels .lbl .flag {
+    color: var(--gold);
+    margin: 0 .5em;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 4vw, 3rem) 5rem;
+  }
+
+  .pairs {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+  }
+
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+    padding: .55rem .5rem;
+    border-radius: 3px;
+    transition: background .2s ease;
+  }
+  .pair:hover {
+    background: var(--hover-bg);
+  }
+
+  .cell p {
+    margin: 0;
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }
+  .cell p + p { margin-top: .6em; }
+
+  /* Drop cap on the very first paragraph */
+  .pair:first-of-type .cell p::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 3.2em;
+    float: left;
+    line-height: .9;
+    padding: .08em .1em 0 0;
+    color: var(--accent);
+  }
+
+  /* Author bio row: styled differently */
+  .pair.bio {
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
+  }
+  .pair.bio .cell p {
+    color: var(--ink-soft);
+    font-size: .95rem;
+    line-height: 1.55;
+    text-align: left;
+  }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem clamp(1rem, 4vw, 3rem) 4rem;
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--muted);
+    font-size: .85rem;
+    letter-spacing: .08em;
+  }
+  footer .rule-short {
+    display: block;
+    width: 50px;
+    height: 1px;
+    margin: 0 auto 1rem;
+    background: var(--rule);
+  }
+
+  /* Section separator between the masthead titles is visual: a centered divider dot */
+  .titles::after {
+    content: "";
+  }
+
+  /* Responsive: stack */
+  @media (max-width: 780px) {
+    body { font-size: 17px; }
+    .titles,
+    .byline-row,
+    .column-labels,
+    .pair {
+      grid-template-columns: 1fr;
+      gap: .75rem;
+    }
+    .byline-row {
+      gap: 1rem;
+    }
+    .titles .en {
+      padding-top: 1.25rem;
+      border-top: 1px dashed var(--rule);
+    }
+    .column-labels .lbl:last-child { display: none; }
+    .cell.en {
+      padding-top: .75rem;
+      border-top: 1px dashed var(--rule);
+      color: var(--ink-soft);
+    }
+    .cell.en p { font-style: italic; }
+    .pair {
+      padding: 1rem .25rem;
+    }
+    .pair + .pair {
+      border-top: 1px dashed var(--rule);
+    }
+    .pair.bio .cell.en { border-top: 1px dashed var(--rule); }
+  }
+
+  @media print {
+    body::before { display: none !important; }
+    body { background: white; }
+    .pair:hover { background: transparent; }
+    .pair { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <p class="kicker">Opinion <span class="dot">·</span> Commentaire</p>
+  <div class="titles">
+    <div class="fr" lang="fr">
+      <h1>L&#x27;économie de la religion</h1>
+      <p class="subtitle">Les religions prospèrent quand elles exigent davantage de leurs fidèles — et leurs sociétés aussi.</p>
+    </div>
+    <div class="en" lang="en">
+      <h1>The Economics of Religion</h1>
+      <p class="subtitle">Faiths thrive when they demand more of their participants—and so do their broader societies.</p>
+    </div>
+  </div>
+</header>
+
+<div class="byline-row">
+  <div class="byline" lang="fr">
+    <div class="author">Par Roland Fryer</div>
+    <div class="date">19 avril 2026</div>
+  </div>
+  <div class="byline" lang="en">
+    <div class="author">By Roland Fryer</div>
+    <div class="date">April 19, 2026</div>
+  </div>
+</div>
+
+<div class="column-labels">
+  <div class="lbl">Français <span class="flag">·</span> traduction</div>
+  <div class="lbl">English <span class="flag">·</span> original</div>
+</div>
+
+<main>
+  <div class="pairs">
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Lorsque j’étais post-doctorant à l’Université de Chicago, Gary Becker était l’un de mes mentors. Il avait l’art de ramener les institutions sociales les plus complexes à de simples questions économiques. Après un voyage à Rome, il évoqua sa rencontre avec le pape Jean-Paul II. Je lui demandai de quoi ils avaient parlé. Souriant, Becker me dit qu’il avait demandé au pape : « Les affaires marchent ? »</p></div>
+        <div class="cell en" lang="en"><p>When I was a postdoctoral student at the University of Chicago, Gary Becker was one of my mentors. He had a way of reducing complicated social institutions to simple economic questions. After a trip to Rome, he mentioned meeting Pope John Paul II. I asked what they talked about. Smiling, Becker said he’d asked the pope, “How’s business?”</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Pour quelqu’un qui avait passé ses dimanches dans une église méthodiste épiscopale africaine avec sa grand-mère, cela tenait du blasphème. La religion, comme je l’enseignais joyeusement à mes élèves de CE1 à l’école du dimanche, relevait de la foi et de la communauté — de quelque chose qui dépasse les transactions. Mais Becker avait le don de débusquer le marché au cœur de tout mystère.</p></div>
+        <div class="cell en" lang="en"><p>As someone who spent Sundays in an African Methodist Episcopal church with my grandmother, this felt like blasphemy. Religion, as I joyfully taught my second-graders in Sunday school, was about faith and community—something beyond transactions. But Becker had a gift for finding the market inside any mystery.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>La religion est l’une des entreprises les plus florissantes de l’histoire humaine. Les seules églises des États-Unis récoltent bien plus de 100 milliards de dollars de dons par an. Des milliards de personnes à travers le monde se revendiquent d’une religion. Les institutions sont durables. Les clients sont fidèles. Et le produit — une structure morale, du sens, des réponses aux questions les plus difficiles de l’existence — répond à une demande pour ainsi dire universelle.</p></div>
+        <div class="cell en" lang="en"><p>Religion is one of the most successful enterprises in human history. Churches the U.S. alone collect well over $100 billion a year in donations. Billions of people globally are adherents to a religion. The institutions are durable. The customers are loyal. And the product—moral structure, meaning, answers to life’s hardest questions—serves an essentially universal demand.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Ce qui en fait un marché bien étrange. Les secteurs qui répondent à des besoins universels tendent à se concentrer entre les mains d’une poignée d’acteurs. C’est ce qui s’est produit pour l’aviation commerciale, les cartes de crédit et les réseaux sociaux. La religion a pris le chemin inverse, vers une multitude de traditions et des centaines, voire des milliers, de confessions — avec ce paradoxe concomitant : presque aucun nouvel arrivant ne s’y impose. N’importe qui peut fonder une religion, mais rares sont celles qui durent.</p></div>
+        <div class="cell en" lang="en"><p>Which makes for a strange market. Industries filling universal needs tend to consolidate into a handful of players. It happened to commercial aviation, credit cards and social media. Religion went in the other direction, toward many traditions and hundreds if not thousands of denominations—and a simultaneous paradox: almost no successful new entrants. Anyone can found a religion, but very few last.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>La structure du marché est l’une des caractéristiques de la religion qui résistent à toute explication simple. Pourquoi la religion persiste-t-elle alors qu’elle exige tant — du temps, de l’argent, des contraintes comportementales, la croyance en des affirmations qui résistent à la vérification ? Pourquoi le marché se fragmente-t-il au lieu de se concentrer ? Et que produit exactement la religion ? Les réponses ont quelque chose à nous dire sur la société américaine.</p></div>
+        <div class="cell en" lang="en"><p>Market structure is one of several features of religion that resist easy explanation. Why does religion persist despite asking so much—time, money, behavioral constraint, belief in claims that resist verification? Why does the market fragment rather than consolidate? And what exactly does religion produce? The answers have something to say about American society.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>J’ai grandi dans le Sud, où ne pas aller à l’église vous rendait étrange. J’habite aujourd’hui à Cambridge, dans le Massachusetts, où c’est y aller qui vous rend étrange. Circulant entre ces deux mondes, je n’ai jamais pu me contenter de considérer la religion comme un bruit de fond. Elle a toujours appelé une explication. Cet instinct m’a valu des ennuis pendant mes études doctorales, lorsqu’on m’a exclu d’un groupe d’étude biblique pour avoir posé trop de questions.</p></div>
+        <div class="cell en" lang="en"><p>I grew up in the South, where not going to church made you strange. Now I live in Cambridge, Mass., where going to church does. Moving between those worlds, I’ve never been able to treat religion as background noise. It has always demanded explanation. That instinct got me into trouble in graduate school, when I was pushed out of a Bible study for asking too many questions.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Dans l’église où j’ai grandi, les gens ne venaient pas seulement pour la doctrine. Ils venaient avec leurs besoins. Tel homme pouvait demander de l’aide pour payer sa facture d’électricité. Telle femme demandait conseil pour gérer un fils prodigue. L’église offrait plus qu’une foi. Elle offrait une assurance mutuelle : un réseau de personnes qui, dans les moments difficiles, répondaient présentes les unes pour les autres.</p></div>
+        <div class="cell en" lang="en"><p>In the church I grew up in, people didn’t only show up for doctrine. They showed up with needs. A man might ask for help with his electricity bill. A woman would ask for wisdom in dealing with a prodigal son. The church provided more than belief. It provided mutual insurance: a network of people who, in moments of need, would show up for one another.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>De tels systèmes souffrent d’un problème bien connu : le resquillage. Si les avantages de l’adhésion s’obtiennent à bas coût, chacun a intérêt à prendre sans contribuer. Avec le temps, le système s’effrite. L’entraide se dégrade. La communauté se vide de sa substance. Ce n’est pas propre à la religion — cela touche toute organisation produisant des biens collectifs. Mais la religion, à travers les traditions et les siècles, a convergé vers une solution remarquablement constante : rendre la participation coûteuse.</p></div>
+        <div class="cell en" lang="en"><p>Such systems have a familiar problem: free-riding. If the benefits of membership are available at low cost, people have an incentive to take without contributing. Over time, the system breaks down. The mutual aid degrades. The community hollows out. This isn’t unique to religion—it afflicts any organization that produces collective goods. But religion, across traditions and centuries, has converged on a remarkably consistent solution: make participation costly.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>C’est l’intuition centrale de Laurence Iannaccone, dont l’article « Sacrifice and Stigma » (1992) a reconfiguré la manière dont les sciences sociales pensent le comportement religieux. Les exigences que la religion impose à ses membres ne sont pas des obstacles à la participation. Elles sont le mécanisme par lequel la participation acquiert sa valeur.</p></div>
+        <div class="cell en" lang="en"><p>This is the central insight of Laurence Iannaccone, whose paper “Sacrifice and Stigma” (1992) reframed how social scientists think about religious behavior. The demands religion places on its members aren’t barriers to participation. They are the mechanism by which participation becomes valuable.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Les musulmans jeûnent pendant le Ramadan. Les juifs pratiquants mettent à part le Shabbat. Les Saints des Derniers Jours versent la dîme et accomplissent des missions. Les chrétiens se rassemblent, donnent et organisent leur vie autour de rituels partagés comme Pâques. Les détails diffèrent. Pas l’économie.</p></div>
+        <div class="cell en" lang="en"><p>Muslims fast during Ramadan. Observant Jews set aside the Sabbath. Latter-day Saints tithe and serve missions. Christians gather, give and organize their lives around shared rituals like Easter. The details differ. The economics don’t.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Lorsque la participation exige un sacrifice visible — du temps, de l’argent, des contraintes comportementales —, l’engagement devient observable. Et un engagement observable résout un problème de confiance fondamental. Dans une communauté fondée sur l’entraide, on ne peut vérifier ce qu’un inconnu croit. On peut observer ce qu’il sacrifie. La personne qui vient chaque semaine et donne régulièrement a fait la preuve de quelque chose quant à sa disposition à contribuer. Cette démonstration est le ciment qui fait tenir la communauté.</p></div>
+        <div class="cell en" lang="en"><p>When participation requires visible sacrifice—time, money, behavioral constraint—commitment becomes observable. And observable commitment solves a deep problem of trust. In a community built on mutual aid, you can’t verify what a stranger believes. You can observe what he sacrifices. The person who shows up every week and gives regularly has demonstrated something about his willingness to contribute. That demonstration is the glue that holds the community together.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>M. Iannaccone a formalisé cela comme un problème de bien de club. Les communautés religieuses produisent des choses — de la solidarité, de l’assurance, un sentiment d’appartenance — qui n’ont de valeur que si les membres contribuent. Des coûts élevés écartent les resquilleurs et élèvent la qualité du groupe. La communauté gagne en valeur précisément parce que l’entrée y est difficile.</p></div>
+        <div class="cell en" lang="en"><p>Mr. Iannaccone formalized this as a club-good problem. Religious communities produce things—solidarity, insurance, belonging—that are valuable only if members contribute. High costs screen out free-riders and raise the quality of the group. The community becomes more valuable precisely because entry is hard.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Les données corroborent ce constat. S’appuyant sur des enquêtes menées au cours de plusieurs décennies, M. Iannaccone a mis en évidence un phénomène frappant : plus une tradition exige, plus ses membres y participent intensément. Ce n’est pas une preuve de causalité — les traditions plus strictes peuvent attirer des personnes plus engagées —, mais le phénomène est constant. Et il existe au moins une expérience naturelle : un article de 2025 a montré que lorsque l’Église catholique a entrepris de vastes réformes après Vatican II — faire passer la messe du latin aux langues locales, adoucir des positions doctrinales séculaires, assouplir les pratiques —, la fréquentation a chuté considérablement dans les pays catholiques, baissant d’environ 20 points de pourcentage de plus que dans les pays protestants entre 1965 et 2015. Moindre coût, communauté affaiblie.</p></div>
+        <div class="cell en" lang="en"><p>The data are consistent with this. Using survey data from several decades, Mr. Iannaccone documented a striking pattern: The more a tradition demands, the more intensely its members participate. This isn’t causal proof—stricter traditions may attract more committed people—but the pattern is consistent. And there is at least one natural experiment: A 2025 paper showed that when the Catholic Church undertook sweeping reforms after Vatican II—moving Mass from Latin to the local language, softening centuries-old doctrinal positions, loosening practices—attendance fell substantially across Catholic countries, declining about 20 percentage points more than in Protestant countries between 1965 and 2015. Lower cost, weaker community.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>La religion produit aussi quelque chose de mesurable. Mes collègues Robert Barro et Rachel McCleary ont examiné des données issues de 59 pays pour un article de 2003. La croyance au paradis et à l’enfer est positivement corrélée à la croissance économique. Les nations où ces croyances sont répandues tendent à croître plus vite.</p></div>
+        <div class="cell en" lang="en"><p>Religion also produces something measurable. My colleagues Robert Barro and Rachel McCleary examined data from 59 countries for a 2003 paper. Belief in heaven and hell is positively associated with economic growth. Nations where these beliefs are widespread tend to grow faster.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Le mécanisme semble passer par le comportement : une croyance intériorisée façonne l’éthique du travail, l’honnêteté et la disposition à coopérer avec des inconnus. Plus frappant encore est ce qui se produit quand on dissocie la croyance de la fréquentation. La pratique religieuse est négativement corrélée à la croissance, une fois la croyance prise en compte. S’asseoir sur un banc d’église, à soi seul, ne produit rien. Ce qui produit l’effet, c’est la conviction — une croyance intériorisée assez profondément pour modifier le comportement quand personne ne regarde.</p></div>
+        <div class="cell en" lang="en"><p>The mechanism appears to run through behavior: Internalized belief shapes work ethic, honesty and willingness to cooperate with strangers. More striking is what happens when you separate belief from attendance. Church participation is negatively associated with growth, once you account for belief. Sitting in the pew, on its own, does nothing. What drives the effect is conviction—belief internalized deeply enough to change behavior when no one is watching.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>M. Barro et Mme McCleary ont aussi constaté que la participation est plus élevée là où la concurrence entre confessions est plus vive. Les religions en situation de monopole, comme les entreprises en situation de monopole, s’endorment sur leurs lauriers. L’extraordinaire pluralisme de la vie religieuse américaine n’est pas un défaut. C’est ce qui maintient le marché en vie.</p></div>
+        <div class="cell en" lang="en"><p>Mr. Barro and Ms. McCleary also found that participation is higher where there is more competition among denominations. Monopoly religions, like monopoly firms, get complacent. The extraordinary pluralism of American religious life isn’t a defect. It’s why the market stays vital.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Ou plutôt le maintenait. L’affiliation à une église, qui tournait autour de 70 % des adultes américains durant l’essentiel du XXᵉ siècle, est passée sous la barre des 50 % en 2020. La fréquentation hebdomadaire est tombée de 42 % il y a vingt ans à environ 30 % aujourd’hui.</p></div>
+        <div class="cell en" lang="en"><p>Or stayed vital. Church membership, which hovered near 70% of American adults for much of the 20th century, fell below 50% in 2020. Weekly attendance has dropped from 42% two decades ago to around 30% today.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Alexis de Tocqueville mettait en garde : sans associations volontaires — églises, groupes civiques, organisations locales —, les individus s’atomiseraient et le gouvernement comblerait ce vide par ce qu’il appelait le « despotisme doux ». De toutes ces associations, il tenait la religion pour la plus importante.</p></div>
+        <div class="cell en" lang="en"><p>Alexis de Tocqueville warned that without voluntary associations—churches, civic groups, local organizations—individuals would become atomized and government would fill the vacuum with what he called “soft despotism.” Of all these associations, he considered religion the most important.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Qu’est-ce qui occupe l’espace que la religion délaisse ? L’identité politique. La culture du bien-être. Les communautés en ligne. Toutes affichent de faibles barrières à l’entrée et à la sortie. On peut rejoindre une tribu politique en un après-midi et la quitter la même semaine. Le coût est faible. Et la qualité de l’assurance mutuelle l’est tout autant. Quand votre loyer est dû ou que votre diagnostic est grave ou inquiétant, vos abonnés sur Twitter ne viendront pas vous rendre visite.</p></div>
+        <div class="cell en" lang="en"><p>What is filling the space religion is vacating? Political identity. Wellness culture. Online community. These all feature low barriers to entry and exit. You can join a political tribe in an afternoon and leave it the same week. The cost is low. So is the quality of the mutual insurance. When your rent is due or your diagnosis is dire or scary, your Twitter following isn’t coming over.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>L’économie peut aller loin dans l’explication de la persistance de la religion. Ce qu’elle ne peut expliquer pleinement, c’est pourquoi, dans les moments de crise, les gens se tournent non seulement les uns vers les autres, mais vers quelque chose qui les dépasse.</p></div>
+        <div class="cell en" lang="en"><p>Economics can go a long way in explaining why religion persists. What it can’t fully explain is why, in moments of crisis, people turn not only to each other but to something beyond each other.</p></div>
+      </div>
+      <div class="pair">
+        <div class="cell fr" lang="fr"><p>Je tente encore de concilier ma foi avec ma discipline. La tension entre la question et l’engagement n’est pas un problème à résoudre — même si, parfois, elle vous fait exclure d’un groupe d’étude biblique. C’est, j’en suis venu à le croire, ce qu’est réellement la foi.</p></div>
+        <div class="cell en" lang="en"><p>I am still trying to square my faith with my discipline. The tension between the question and the commitment isn’t a problem to be solved—even if, sometimes, it gets you expelled from Bible study. It is, I’ve come to think, what faith actually is.</p></div>
+      </div>
+      <div class="pair bio">
+        <div class="cell fr" lang="fr"><p><em>M. Fryer, collaborateur du Journal, est professeur d’économie à Harvard, cofondateur d’Equal Opportunity Ventures et senior fellow au Manhattan Institute.</em></p></div>
+        <div class="cell en" lang="en"><p><em>Mr. Fryer, a Journal contributor, is a professor of economics at Harvard, a founder of Equal Opportunity Ventures and a senior fellow at the Manhattan Institute.</em></p></div>
+      </div>
+  </div>
+</main>
+
+<footer>
+  <span class="rule-short"></span>
+  Source : The Wall Street Journal · Opinion — April 19, 2026
+</footer>
+
+</body>
+</html>
